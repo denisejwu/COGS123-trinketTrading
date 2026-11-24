@@ -12,15 +12,18 @@ export function SubmitButton({
   pendingText = "Saving…",
   variant = "primary",
   className = "",
+  disabled = false,
 }: {
   children: React.ReactNode;
   pendingText?: string;
   variant?: ButtonVariant;
   className?: string;
+  /** Extra reason to disable, e.g. while photos are still uploading. */
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className={buttonClasses(variant, className)}>
+    <button type="submit" disabled={pending || disabled} className={buttonClasses(variant, className)}>
       {pending ? pendingText : children}
     </button>
   );

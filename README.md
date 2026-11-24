@@ -13,8 +13,8 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
 | Phase | What | Status |
 |---|---|---|
 | 1 | Project setup, Supabase connection, auth, profiles | ✅ Done |
-| 2 | Communities, listings with photos, comments | ⏳ Next |
-| 3 | Offers with accept/decline rules | |
+| 2 | Communities, listings with photos, comments | ✅ Done |
+| 3 | Offers with accept/decline rules | ⏳ Next |
 | 4 | Trade rooms, realtime chat, plan panel, complete trade | |
 | 5 | Reviews, trader badge, events + RSVP, notifications | |
 | 6 | Report/block, polish, deploy to Vercel | |
@@ -59,6 +59,11 @@ Pick one option and stick with it. If you mix them, the CLI may try to re-run fi
 | File | Phase | What it adds |
 |---|---|---|
 | `0001_profiles.sql` | 1 | `profiles` table, sign-up trigger, `avatars` storage bucket, security rules |
+| `0002_communities_listings.sql` | 2 | communities, members, listings + photos, comments, discussion posts, `listing-images` and `community-covers` buckets |
+
+**Then run `supabase/seed.sql`** the same way (SQL Editor → paste → Run). It adds the six starter
+communities (Blind Boxes, Enamel Pins, Keychains, Pokémon Cards, Trading Cards, Plushies). It's safe to run
+again later, since it skips anything that already exists. Phase 5 adds starter events to it.
 
 ## 3. Run the app
 
@@ -98,7 +103,8 @@ They act as real logged-in users, so Row Level Security is tested too. They neve
 | `npm run build` | Production build (also type-checks) |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript check only |
-| `npm run db:types` | Regenerate `src/lib/database.types.ts` from your linked Supabase project (after `supabase link`) |
+| `npm run db:types:local` | Regenerate `src/lib/database.types.ts` from the migration files (no Supabase needed) |
+| `npm run db:types` | Same, but from your linked Supabase project (after `supabase link`) |
 
 ---
 
@@ -115,10 +121,14 @@ src/
   lib/
     supabase/          Supabase clients for the browser, server and proxy
     auth.ts            "who is logged in?" helpers
-    database.types.ts  TypeScript types for the database
+    database.types.ts  TypeScript types for the database (generated)
+    types.ts           friendly names for rows: Profile, Listing, ...
   proxy.ts             runs before each request: refreshes login, protects pages
 supabase/
   migrations/          SQL files you run on Supabase, in order
+  seed.sql             starter communities (and events, from Phase 5)
+scripts/
+  gen-db-types.mjs     builds database.types.ts from the migrations
 tests/db/              database tests (PGlite)
 ```
 

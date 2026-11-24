@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { TextAreaField, TextField } from "@/components/ui/Field";
 import { FormMessage } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import type { Profile } from "@/lib/database.types";
+import type { Profile } from "@/lib/types";
 import { initialFormState, USERNAME_RULES } from "@/lib/validation";
 import { updateProfile } from "./actions";
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getUserId } from "@/lib/auth";
+import { LISTING_CARD_SELECT, type ListingCardData } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
 import { parseProfileTab, ProfileView } from "./ProfileView";
 
@@ -29,12 +30,26 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const [profile, myId] = await Promise.all([getProfile(username), getUserId()]);
   if (!profile) notFound();
 
+  // Their listings that haven't been traded away yet, newest first.
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("listings")
+    .select(LISTING_CARD_SELECT)
+    .eq("owner_id", profile.id)
+    .neq("status", "traded")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new Error(`Couldn't load listings: ${error.message}`);
+  const listings = (data ?? []) as unknown as ListingCardData[];
+
   return (
     <ProfileView
       profile={profile}
       isMe={profile.id === myId}
       activeTab={parseProfileTab(tab)}
       basePath={`/u/${profile.username}`}
+      forTrade={listings.filter((l) => l.for_trade)}
+      showcase={listings.filter((l) => !l.for_trade)}
     />
   );
 }

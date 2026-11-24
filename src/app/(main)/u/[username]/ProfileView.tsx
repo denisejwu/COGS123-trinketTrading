@@ -2,10 +2,12 @@ import Link from "next/link";
 import { Eye, MapPin, Package, Star } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { TraderBadge } from "@/components/TraderBadge";
+import { ListingGrid } from "@/components/listings/ListingGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LinkTabs } from "@/components/ui/LinkTabs";
 import { buttonClasses } from "@/components/ui/button";
-import type { Profile } from "@/lib/database.types";
+import type { ListingCardData } from "@/lib/listings";
+import type { Profile } from "@/lib/types";
 
 // The three profile tabs, with a short explanation shown under each.
 export const PROFILE_TABS = {
@@ -29,13 +31,22 @@ export function ProfileView({
   isMe,
   activeTab,
   basePath,
+  forTrade,
+  showcase,
 }: {
   profile: Profile;
   isMe: boolean;
   activeTab: ProfileTab;
   /** Where the tab links point, e.g. "/u/denise". */
   basePath: string;
+  forTrade: ListingCardData[];
+  showcase: ListingCardData[];
 }) {
+  const counts: Partial<Record<ProfileTab, number>> = {
+    "for-trade": forTrade.length,
+    showcase: showcase.length,
+  };
+
   return (
     <div className="space-y-8">
       {/* ---------- Header ---------- */}
@@ -78,24 +89,45 @@ export function ProfileView({
               key,
               label: PROFILE_TABS[key].label,
               href: `${basePath}?tab=${key}`,
+              count: counts[key],
             }))}
           />
           <p className="text-sm text-muted">{PROFILE_TABS[activeTab].hint}</p>
         </div>
 
         {activeTab === "for-trade" && (
-          <EmptyState icon={<Package size={22} />} title="Nothing up for trade yet">
-            {isMe
-              ? "Post a listing and mark it “For trade” to show it here."
-              : `${profile.display_name} hasn't listed anything for trade yet.`}
-          </EmptyState>
+          <ListingGrid
+            listings={forTrade}
+            empty={
+              <EmptyState
+                icon={<Package size={22} />}
+                title="Nothing up for trade yet"
+                action={
+                  isMe ? (
+                    <Link href="/listings/new" className={buttonClasses("primary")}>
+                      Post a listing
+                    </Link>
+                  ) : undefined
+                }
+              >
+                {isMe
+                  ? "Post a listing and choose “Up for trade” to show it here."
+                  : `${profile.display_name} hasn't listed anything for trade yet.`}
+              </EmptyState>
+            }
+          />
         )}
         {activeTab === "showcase" && (
-          <EmptyState icon={<Eye size={22} />} title="Showcase is empty">
-            {isMe
-              ? "Post a listing and choose “Showcase only” to show off items you're keeping."
-              : `${profile.display_name} hasn't added anything to their showcase yet.`}
-          </EmptyState>
+          <ListingGrid
+            listings={showcase}
+            empty={
+              <EmptyState icon={<Eye size={22} />} title="Showcase is empty">
+                {isMe
+                  ? "Post a listing and choose “Showcase only” to show off items you're keeping."
+                  : `${profile.display_name} hasn't added anything to their showcase yet.`}
+              </EmptyState>
+            }
+          />
         )}
         {activeTab === "reviews" && (
           <EmptyState icon={<Star size={22} />} title="No reviews yet">

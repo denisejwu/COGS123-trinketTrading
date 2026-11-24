@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buttonClasses } from "@/components/ui/button";
-import type { Profile } from "@/lib/database.types";
+import type { Profile } from "@/lib/types";
 import { AvatarUploader } from "./AvatarUploader";
 import { ProfileForm } from "./ProfileForm";
 
