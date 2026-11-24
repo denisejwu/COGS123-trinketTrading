@@ -18,13 +18,6 @@ export const getUserId = cache(async (): Promise<string | null> => {
   return data?.claims?.sub ?? null;
 });
 
-/** The logged-in user's email (shown in Settings), or null. */
-export const getUserEmail = cache(async (): Promise<string | null> => {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  return (data?.claims?.email as string | undefined) ?? null;
-});
-
 /** The logged-in user's profile row, or null if logged out. */
 export const getMyProfile = cache(async () => {
   const userId = await getUserId();

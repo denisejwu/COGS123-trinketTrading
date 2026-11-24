@@ -20,12 +20,37 @@ describe("profiles", () => {
 
   it("falls back to a generated username when the wanted one is taken", async () => {
     await createUser(db, { username: "pinqueen" });
-    const second = await createUser(db, { username: "pinqueen" });
+    const second = await createUser(db, { username: "pinqueen", display_name: "Pin Queen" });
     const { rows } = await db.query<{ username: string }>(
       "select username from public.profiles where id = $1",
       [second],
     );
-    expect(rows[0].username).toMatch(/^user_[a-f0-9]{10}$/);
+    expect(rows[0].username).toMatch(/^pin_queen_\d{4}$/);
+  });
+
+  it("builds a username from just a name (name-only sign-up)", async () => {
+    // Like supabase.auth.signInAnonymously({ options: { data: { display_name } } })
+    const { rows: users } = await db.query<{ id: string }>(
+      `insert into auth.users (raw_user_meta_data) values ('{"display_name": "Denise W."}') returning id`,
+    );
+    const { rows } = await db.query<{ username: string; display_name: string }>(
+      "select username, display_name from public.profiles where id = $1",
+      [users[0].id],
+    );
+    expect(rows[0].display_name).toBe("Denise W.");
+    expect(rows[0].username).toMatch(/^denise_w_\d{4}$/);
+  });
+
+  it("still works for names with no usable letters", async () => {
+    const { rows: users } = await db.query<{ id: string }>(
+      `insert into auth.users (raw_user_meta_data) values ('{"display_name": "✨✨"}') returning id`,
+    );
+    const { rows } = await db.query<{ username: string; display_name: string }>(
+      "select username, display_name from public.profiles where id = $1",
+      [users[0].id],
+    );
+    expect(rows[0]).toMatchObject({ display_name: "✨✨" });
+    expect(rows[0].username).toMatch(/^trader_\d{4}$/);
   });
 
   it("lets a user edit their own profile but not someone else's", async () => {

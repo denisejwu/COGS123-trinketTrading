@@ -5,33 +5,29 @@ import { TextField } from "@/components/ui/Field";
 import { FormMessage } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { initialFormState } from "@/lib/validation";
-import { login } from "../actions";
+import { startWithName } from "../actions";
 
 export function LoginForm({ next }: { next: string }) {
   // useActionState runs the server action and gives us back its result.
-  const [state, formAction] = useActionState(login, initialFormState);
+  const [state, formAction] = useActionState(startWithName, initialFormState);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-4" noValidate>
       <input type="hidden" name="next" value={next} />
       <FormMessage state={state} />
       <TextField
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
+        label="Your name"
+        name="display_name"
+        autoComplete="nickname"
         required
-        defaultValue={state.values?.email}
+        maxLength={50}
+        placeholder="e.g. Denise W."
+        hint="How other traders will see you. You can change it later in Settings."
+        error={state.fieldErrors?.display_name}
+        defaultValue={state.values?.display_name}
       />
-      <TextField
-        label="Password"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        required
-      />
-      <SubmitButton pendingText="Logging in…" className="w-full">
-        Log in
+      <SubmitButton pendingText="Setting things up…" className="w-full">
+        Start trading
       </SubmitButton>
     </form>
   );

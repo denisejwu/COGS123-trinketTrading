@@ -47,40 +47,33 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxx
    NEXT_PUBLIC_SITE_URL=http://localhost:3000
    ```
-4. In Supabase go to **Authentication → URL Configuration**:
-   - **Site URL:** `http://localhost:3000`
-   - **Redirect URLs:** add `http://localhost:3000/**`
+4. Turn on name-only accounts: **Authentication → Sign In / Providers → Allow anonymous sign-ins** → Save.
+   (See "Accounts" below.)
 
-## 2. Run the database migrations
+## 2. Create the database (one paste)
 
-Every database change lives in `supabase/migrations/`, numbered in the order to run them.
-Run each file **once**, in order, and run new ones as later phases add them.
+All database changes live in `supabase/migrations/` (numbered in order) plus starter data in `supabase/seed.sql`.
+For a **new, empty project**, run everything at once:
 
-**Option A: SQL Editor (easiest)**
-1. Supabase dashboard → **SQL Editor** → **New query**.
-2. Open the migration file (e.g. `supabase/migrations/0001_profiles.sql`), copy everything, paste it in, click **Run**.
-3. You should see *Success. No rows returned*.
+1. `npm run db:bundle` creates `supabase/setup-all.sql` (all migrations + seed in one file).
+2. Open that file, select all (Ctrl+A) and copy (Ctrl+C).
+3. Supabase → **SQL Editor** → **+ New query** → paste (Ctrl+V) → **Run**.
+   If it warns about "destructive operations", click **Run this query**.
+4. You should see *Success. No rows returned*. **Table Editor** now shows the tables.
 
-**Option B: Supabase CLI**
-```bash
-npx supabase login
-npx supabase link --project-ref <your project ref>   # the xxxxxxxx in your project URL
-npx supabase db push
-```
-Pick one option and stick with it. If you mix them, the CLI may try to re-run files you already ran in the SQL editor.
+The file runs as one transaction: if anything fails, nothing is saved, so you can fix it and run it again.
+
+**Later phases** add new migration files. Run just the new file the same way (SQL Editor → paste → Run).
 
 | File | Phase | What it adds |
 |---|---|---|
-| `0001_profiles.sql` | 1 | `profiles` table, sign-up trigger, `avatars` storage bucket, security rules |
+| `0001_profiles.sql` | 1 | `profiles` table, sign-up trigger (name → username like `denise_4821`), `avatars` bucket, security rules |
 | `0002_communities_listings.sql` | 2 | communities, members, listings + photos, comments, discussion posts, `listing-images` and `community-covers` buckets |
 | `0003_negotiation.sql` | 3 | rarity, rarity votes, wants, offers / proposal rounds / items, chat messages (Realtime), trades, trade matches |
+| `seed.sql` | 2+ | the six starter communities (safe to run again) |
 
 **Check your setup any time** with `npm run check:supabase`. It uses only the publishable key and tells you
-which migrations and storage buckets it can find.
-
-**Then run `supabase/seed.sql`** the same way (SQL Editor → paste → Run). It adds the six starter
-communities (Blind Boxes, Enamel Pins, Keychains, Pokémon Cards, Trading Cards, Plushies). It's safe to run
-again later, since it skips anything that already exists. Phase 5 adds starter events to it.
+whether name-only sign-in is on and which tables and storage buckets it can find.
 
 ## 3. Run the app
 
@@ -90,18 +83,16 @@ npm run dev
 ```
 Open http://localhost:3000.
 
-### About confirmation emails
+### Accounts (prototype)
 
-New accounts must confirm their email. Supabase's built-in email sender is only meant for testing:
-it sends just a few emails per hour, and may only deliver to addresses on your Supabase team.
-To make test accounts without waiting on email:
+There's no email or password. On the welcome page you type a name, and that creates your account
+(Supabase "anonymous sign-in" plus a profile with a generated username you can change in Settings).
 
-- Supabase → **Authentication → Users → Add user → Create new user**, tick **Auto Confirm User**.
-  That account gets a username like `user_1a2b3c4d5e`; change it in **Settings** after logging in.
-- For real users, set up a custom email provider (e.g. Resend) under **Authentication → Emails → SMTP Settings**.
-
-Open email links **in the same browser** you signed up in, so the link can log you in automatically.
-(If you open it somewhere else, your email still gets confirmed and you can just log in.)
+- You stay logged in while the browser is open: refreshes, new tabs and navigating are fine.
+- The login is a **browser-session cookie**: closing the browser (or logging out) ends it, and that account
+  can't be opened again. Your profile and listings stay visible to others.
+- Each browser is its own person, so use a normal window and an Incognito window to test trading.
+- Supabase limits new anonymous accounts to about 30 per hour per network by default.
 
 ## 4. Tests
 
@@ -130,9 +121,8 @@ They act as real logged-in users, so Row Level Security is tested too. They neve
 ```
 src/
   app/
-    (auth)/            login, signup, reset-password: pages without the nav bar
+    (auth)/            welcome page (type a name to start): no nav bar
     (main)/            every logged-in page: home, profile, settings, ...
-    auth/confirm/      where email links land (turns the link into a login)
     auth/signout/      log out (POST)
   components/          shared UI: Avatar, TraderBadge, nav, form fields, ...
   lib/

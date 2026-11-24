@@ -1,11 +1,10 @@
-import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { LogoutButton } from "@/components/LogoutButton";
 import type { Profile } from "@/lib/types";
 import { AvatarUploader } from "./AvatarUploader";
 import { ProfileForm } from "./ProfileForm";
 
 /** What the Settings page looks like (page.tsx loads the data). */
-export function SettingsView({ profile, email }: { profile: Profile; email: string | null }) {
+export function SettingsView({ profile }: { profile: Profile }) {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <h1 className="text-2xl font-extrabold md:text-3xl">Settings</h1>
@@ -31,25 +30,19 @@ export function SettingsView({ profile, email }: { profile: Profile; email: stri
         <ProfileForm profile={profile} />
       </section>
 
-      <section aria-labelledby="account-heading" className="space-y-4 rounded-3xl border border-line bg-card p-6">
+      <section aria-labelledby="account-heading" className="space-y-3 rounded-3xl border border-line bg-card p-6">
         <h2 id="account-heading" className="text-lg font-extrabold">
           Account
         </h2>
-        <dl className="text-sm">
-          <dt className="font-bold">Email</dt>
-          <dd className="text-muted">{email ?? "Unknown"}</dd>
-          <dd className="text-xs text-muted">Only you can see this.</dd>
-        </dl>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/reset-password/update" className={buttonClasses("secondary")}>
-            Change password
-          </Link>
-          <form action="/auth/signout" method="post">
-            <button type="submit" className={buttonClasses("ghost")}>
-              Log out
-            </button>
-          </form>
-        </div>
+        <p className="text-sm">
+          <strong>Name-only account (prototype).</strong> There&apos;s no email or password: you stay logged in
+          on this browser.
+        </p>
+        <p className="text-xs text-muted">
+          If you log out or clear this browser&apos;s data, you can&apos;t get back into this account. You can
+          always start a new one with a name.
+        </p>
+        <LogoutButton />
       </section>
     </div>
   );

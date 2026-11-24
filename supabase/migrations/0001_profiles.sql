@@ -51,10 +51,13 @@ create trigger profiles_set_updated_at
 
 -- ---------------------------------------------------------------------
 -- Sign-up trigger: when Supabase Auth creates a user, create their profile.
--- The sign-up form sends `username` and `display_name` as user metadata.
--- If the username is missing, invalid or already taken we fall back to
--- "user_xxxxxxxxxx" instead of failing, because an error here would make
--- the whole sign-up fail. Users can change it later in Settings.
+--
+-- In the prototype people only type a name, which arrives as the
+-- `display_name` metadata. We turn it into a username like "denise_4821"
+-- (name + 4 random digits, retried until it's unique). If a `username` is
+-- sent and free, we use that instead. We never let this fail, because an
+-- error here would make the whole sign-up fail. Usernames can be changed
+-- later in Settings.
 -- ---------------------------------------------------------------------
 create or replace function public.handle_new_user()
 returns trigger
@@ -64,21 +67,38 @@ set search_path = ''       -- security best practice for security definer
 as $$
 declare
   wanted_username text := lower(coalesce(new.raw_user_meta_data ->> 'username', ''));
-  fallback_username text := 'user_' || left(replace(new.id::text, '-', ''), 10);
+  final_display_name text := left(nullif(trim(new.raw_user_meta_data ->> 'display_name'), ''), 50);
+  base text;
+  candidate text;
   final_username text;
-  final_display_name text;
 begin
   if wanted_username ~ '^[a-z0-9_]{3,20}$'
      and not exists (select 1 from public.profiles p where p.username = wanted_username) then
     final_username := wanted_username;
   else
-    final_username := fallback_username;
+    -- "Denise W." -> "denise_w" (letters and numbers only, max 15 characters)
+    base := trim(both '_' from regexp_replace(lower(coalesce(final_display_name, '')), '[^a-z0-9]+', '_', 'g'));
+    base := trim(both '_' from left(base, 15));
+    if char_length(base) < 3 then
+      base := 'trader';
+    end if;
+
+    -- Try a few random 4-digit endings until one is free.
+    for attempt in 1 .. 20 loop
+      candidate := base || '_' || lpad(floor(random() * 10000)::int::text, 4, '0');
+      if not exists (select 1 from public.profiles p where p.username = candidate) then
+        final_username := candidate;
+        exit;
+      end if;
+    end loop;
+
+    -- Practically never needed, but guaranteed unique.
+    if final_username is null then
+      final_username := 'user_' || left(replace(new.id::text, '-', ''), 10);
+    end if;
   end if;
 
-  final_display_name := left(
-    coalesce(nullif(trim(new.raw_user_meta_data ->> 'display_name'), ''), final_username),
-    50
-  );
+  final_display_name := coalesce(final_display_name, final_username);
 
   insert into public.profiles (id, username, display_name)
   values (new.id, final_username, final_display_name);

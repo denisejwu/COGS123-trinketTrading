@@ -2,7 +2,6 @@
 
 export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 export const USERNAME_RULES = "3–20 characters: lowercase letters, numbers and _";
-export const MIN_PASSWORD_LENGTH = 8;
 
 /** Read a trimmed string from a submitted form (empty string if missing). */
 export function formText(formData: FormData, name: string) {

@@ -31,6 +31,13 @@ if (health instanceof Error) bad(`Couldn't reach Supabase: ${health.message}`);
 else if (health.ok) ok("Auth service is reachable and accepted the publishable key");
 else bad(`Auth service answered ${health.status} (is the key correct?)`);
 
+// 2b. Name-only sign-in (Supabase "anonymous sign-ins") must be switched on.
+const settings = await fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } })
+  .then((r) => r.json())
+  .catch(() => null);
+if (settings?.external?.anonymous_users) ok("Name-only sign-in (anonymous sign-ins) is switched on");
+else bad("Name-only sign-in is OFF: Authentication → Sign In / Providers → turn on “Allow anonymous sign-ins”");
+
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
 // 3. Migration 0001 (profiles): username_available() is callable when logged out.

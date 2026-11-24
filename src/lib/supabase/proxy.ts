@@ -1,11 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasSupabaseEnv, supabaseEnv } from "./env";
+import { sessionOnly } from "./session-cookie";
 
 // Pages you can visit without being logged in.
-const PUBLIC_PREFIXES = ["/login", "/signup", "/reset-password", "/auth"];
+const PUBLIC_PREFIXES = ["/login", "/auth"];
 // Pages a logged-in user has no reason to see (we send them home instead).
-const LOGGED_OUT_ONLY = ["/login", "/signup"];
+const LOGGED_OUT_ONLY = ["/login"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -22,7 +23,7 @@ function redirectKeepingCookies(url: URL, from: NextResponse) {
  * Runs before every page request (called from src/proxy.ts):
  *  1. refreshes the Supabase login session if it's about to expire
  *  2. sends logged-out visitors to /login
- *  3. sends logged-in users away from /login and /signup
+ *  3. sends logged-in users away from /login
  */
 export async function updateSession(request: NextRequest) {
   // Without settings we can't check logins. Let the page load so it can
@@ -43,7 +44,7 @@ export async function updateSession(request: NextRequest) {
         response = NextResponse.next({ request });
         // ...and on the response (so the browser stores them).
         cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
+          response.cookies.set(name, value, sessionOnly(options)),
         );
         // Headers that stop CDNs from caching a response containing a session.
         Object.entries(headers).forEach(([name, value]) => response.headers.set(name, value));
