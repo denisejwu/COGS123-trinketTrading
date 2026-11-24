@@ -79,10 +79,13 @@ export function AppNav({ username, displayName, avatarPath }: NavProps) {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            <Link href="/listings/new" className={buttonClasses("primary", "hidden md:inline-flex")}>
-              <PlusCircle aria-hidden="true" size={18} />
-              Post a listing
-            </Link>
+            {/* Desktop only: phones have "Post" in the bottom bar. */}
+            <div className="hidden md:block">
+              <Link href="/listings/new" className={buttonClasses("primary")}>
+                <PlusCircle aria-hidden="true" size={18} />
+                Post a listing
+              </Link>
+            </div>
             <Link
               href="/settings"
               aria-label="Settings"
