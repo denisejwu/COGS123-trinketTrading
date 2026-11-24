@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Notice } from "@/components/ui/Notice";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { safeNextPath } from "@/lib/validation";
 import { LoginForm } from "./LoginForm";
 
@@ -24,7 +25,16 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
       {message && <Notice tone={message.tone}>{message.text}</Notice>}
 
-      <LoginForm next={next} />
+      {hasSupabaseEnv() ? (
+        <LoginForm next={next} />
+      ) : (
+        // Shown when the Supabase settings are missing (e.g. not added in Vercel yet).
+        <Notice tone="warning">
+          PopSwap isn&apos;t connected to Supabase yet. Add <code>NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+          <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> (in <code>.env.local</code> when running locally, or in
+          Vercel under Settings → Environment Variables), then restart or redeploy.
+        </Notice>
+      )}
 
       <p className="text-center text-xs text-muted">
         Prototype: no email or password needed. Each browser is its own account, so use an Incognito window

@@ -26,9 +26,15 @@ function redirectKeepingCookies(url: URL, from: NextResponse) {
  *  3. sends logged-in users away from /login
  */
 export async function updateSession(request: NextRequest) {
-  // Without settings we can't check logins. Let the page load so it can
-  // show a helpful "missing .env.local" error instead of a blank crash.
-  if (!hasSupabaseEnv()) return NextResponse.next({ request });
+  // Without settings we can't check logins. Send everyone to the welcome
+  // page, which explains which settings are missing (instead of a crash).
+  if (!hasSupabaseEnv()) {
+    if (isPublic(request.nextUrl.pathname)) return NextResponse.next({ request });
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+    return NextResponse.redirect(loginUrl);
+  }
 
   const { url, key } = supabaseEnv();
   let response = NextResponse.next({ request });
