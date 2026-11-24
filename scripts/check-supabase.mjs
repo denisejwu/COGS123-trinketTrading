@@ -38,9 +38,10 @@ const { data: free, error: rpcError } = await supabase.rpc("username_available",
 if (rpcError) bad(`0001_profiles.sql not detected (${rpcError.code ?? ""} ${rpcError.message})`);
 else ok(`0001_profiles.sql is installed (username_available answered ${free})`);
 
-// 4. Migration 0002 (communities/listings): the tables exist. Logged-out
-//    visitors see no rows because of Row Level Security, which is expected.
-for (const table of ["communities", "listings", "community_posts"]) {
+// 4. Migrations 0002 (communities/listings) and 0003 (negotiation): the
+//    tables exist. Logged-out visitors see no rows because of Row Level
+//    Security, which is expected.
+for (const table of ["communities", "listings", "community_posts", "offers", "trade_messages", "listing_wants"]) {
   const { data, error } = await supabase.from(table).select("id").limit(1);
   if (error) bad(`Table "${table}" not found (${error.code ?? ""} ${error.message})`);
   else ok(`Table "${table}" exists (logged-out visitors see ${data.length} rows: RLS is protecting it)`);
