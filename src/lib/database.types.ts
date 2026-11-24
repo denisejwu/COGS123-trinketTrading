@@ -206,6 +206,75 @@ export type Database = {
           },
         ];
       };
+      listing_rarity_votes: {
+        Row: {
+          created_at: string;
+          listing_id: string;
+          rarity: Database["public"]["Enums"]["listing_rarity"];
+          voter_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          listing_id: string;
+          rarity: Database["public"]["Enums"]["listing_rarity"];
+          voter_id: string;
+        };
+        Update: {
+          created_at?: string;
+          listing_id?: string;
+          rarity?: Database["public"]["Enums"]["listing_rarity"];
+          voter_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_rarity_votes_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_rarity_votes_voter_id_fkey";
+            columns: ["voter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      listing_wants: {
+        Row: {
+          created_at: string;
+          listing_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          listing_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          listing_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_wants_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_wants_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       listings: {
         Row: {
           community_id: string;
@@ -216,6 +285,7 @@ export type Database = {
           id: string;
           looking_for: string | null;
           owner_id: string;
+          rarity: Database["public"]["Enums"]["listing_rarity"];
           size: string | null;
           status: Database["public"]["Enums"]["listing_status"];
           title: string;
@@ -230,6 +300,7 @@ export type Database = {
           id?: string;
           looking_for?: string | null;
           owner_id: string;
+          rarity?: Database["public"]["Enums"]["listing_rarity"];
           size?: string | null;
           status?: Database["public"]["Enums"]["listing_status"];
           title: string;
@@ -244,6 +315,7 @@ export type Database = {
           id?: string;
           looking_for?: string | null;
           owner_id?: string;
+          rarity?: Database["public"]["Enums"]["listing_rarity"];
           size?: string | null;
           status?: Database["public"]["Enums"]["listing_status"];
           title?: string;
@@ -260,6 +332,150 @@ export type Database = {
           {
             foreignKeyName: "listings_owner_id_fkey";
             columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      offer_items: {
+        Row: {
+          giver_id: string;
+          listing_id: string;
+          round_id: string;
+        };
+        Insert: {
+          giver_id: string;
+          listing_id: string;
+          round_id: string;
+        };
+        Update: {
+          giver_id?: string;
+          listing_id?: string;
+          round_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "offer_items_giver_id_fkey";
+            columns: ["giver_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offer_items_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offer_items_round_id_fkey";
+            columns: ["round_id"];
+            isOneToOne: false;
+            referencedRelation: "offer_rounds";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      offer_rounds: {
+        Row: {
+          created_at: string;
+          id: string;
+          offer_id: string;
+          proposed_by: string;
+          round_no: number;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          offer_id: string;
+          proposed_by: string;
+          round_no: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          offer_id?: string;
+          proposed_by?: string;
+          round_no?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "offer_rounds_offer_id_fkey";
+            columns: ["offer_id"];
+            isOneToOne: false;
+            referencedRelation: "offers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offer_rounds_proposed_by_fkey";
+            columns: ["proposed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      offers: {
+        Row: {
+          closed_reason: string | null;
+          created_at: string;
+          current_round_id: string | null;
+          id: string;
+          listing_id: string | null;
+          recipient_id: string;
+          sender_id: string;
+          status: Database["public"]["Enums"]["offer_status"];
+          updated_at: string;
+        };
+        Insert: {
+          closed_reason?: string | null;
+          created_at?: string;
+          current_round_id?: string | null;
+          id?: string;
+          listing_id?: string | null;
+          recipient_id: string;
+          sender_id: string;
+          status?: Database["public"]["Enums"]["offer_status"];
+          updated_at?: string;
+        };
+        Update: {
+          closed_reason?: string | null;
+          created_at?: string;
+          current_round_id?: string | null;
+          id?: string;
+          listing_id?: string | null;
+          recipient_id?: string;
+          sender_id?: string;
+          status?: Database["public"]["Enums"]["offer_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "offers_current_round_id_fkey";
+            columns: ["current_round_id"];
+            isOneToOne: false;
+            referencedRelation: "offer_rounds";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offers_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offers_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "offers_sender_id_fkey";
+            columns: ["sender_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -308,11 +524,174 @@ export type Database = {
         };
         Relationships: [];
       };
+      trade_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          id: string;
+          kind: Database["public"]["Enums"]["message_kind"];
+          offer_id: string;
+          round_id: string | null;
+          sender_id: string | null;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["message_kind"];
+          offer_id: string;
+          round_id?: string | null;
+          sender_id?: string | null;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["message_kind"];
+          offer_id?: string;
+          round_id?: string | null;
+          sender_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trade_messages_offer_id_fkey";
+            columns: ["offer_id"];
+            isOneToOne: false;
+            referencedRelation: "offers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trade_messages_round_id_fkey";
+            columns: ["round_id"];
+            isOneToOne: false;
+            referencedRelation: "offer_rounds";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trade_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      trades: {
+        Row: {
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          completed_at: string | null;
+          created_at: string;
+          id: string;
+          offer_id: string;
+          recipient_confirmed_at: string | null;
+          recipient_id: string;
+          round_id: string;
+          sender_confirmed_at: string | null;
+          sender_id: string;
+          status: Database["public"]["Enums"]["trade_status"];
+          updated_at: string;
+        };
+        Insert: {
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          id?: string;
+          offer_id: string;
+          recipient_confirmed_at?: string | null;
+          recipient_id: string;
+          round_id: string;
+          sender_confirmed_at?: string | null;
+          sender_id: string;
+          status?: Database["public"]["Enums"]["trade_status"];
+          updated_at?: string;
+        };
+        Update: {
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          id?: string;
+          offer_id?: string;
+          recipient_confirmed_at?: string | null;
+          recipient_id?: string;
+          round_id?: string;
+          sender_confirmed_at?: string | null;
+          sender_id?: string;
+          status?: Database["public"]["Enums"]["trade_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trades_cancelled_by_fkey";
+            columns: ["cancelled_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trades_offer_id_fkey";
+            columns: ["offer_id"];
+            isOneToOne: true;
+            referencedRelation: "offers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trades_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trades_round_id_fkey";
+            columns: ["round_id"];
+            isOneToOne: false;
+            referencedRelation: "offer_rounds";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trades_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      accept_offer: {
+        Args: {
+          p_offer_id: string;
+        };
+        Returns: string;
+      };
+      cancel_offer: {
+        Args: {
+          p_offer_id: string;
+        };
+        Returns: undefined;
+      };
+      close_offers_for_listing: {
+        Args: {
+          p_listing_id: string;
+          p_reason: string;
+        };
+        Returns: undefined;
+      };
+      counter_offer: {
+        Args: {
+          p_offer_id: string;
+          p_listing_ids: string[];
+          p_message?: string;
+        };
+        Returns: string;
+      };
       create_community: {
         Args: {
           p_name: string;
@@ -327,6 +706,7 @@ export type Database = {
           p_title: string;
           p_description: string;
           p_condition: Database["public"]["Enums"]["listing_condition"];
+          p_rarity: Database["public"]["Enums"]["listing_rarity"];
           p_size: string;
           p_looking_for: string;
           p_for_trade: boolean;
@@ -334,11 +714,52 @@ export type Database = {
         };
         Returns: string;
       };
+      create_offer_round: {
+        Args: {
+          p_offer_id: string;
+          p_proposer: string;
+          p_listing_ids: string[];
+          p_message: string;
+        };
+        Returns: string;
+      };
+      decline_offer: {
+        Args: {
+          p_offer_id: string;
+        };
+        Returns: undefined;
+      };
+      get_trade_matches: {
+        Args: {
+          p_limit?: number;
+        };
+        Returns: { my_listing_id: string; their_listing_id: string; match_kind: string }[];
+      };
       is_member: {
         Args: {
           p_community_id: string;
         };
         Returns: boolean;
+      };
+      is_offer_participant: {
+        Args: {
+          p_offer_id: string;
+        };
+        Returns: boolean;
+      };
+      open_offer_count: {
+        Args: {
+          p_listing_id: string;
+        };
+        Returns: number;
+      };
+      start_offer: {
+        Args: {
+          p_listing_id: string;
+          p_listing_ids: string[];
+          p_message?: string;
+        };
+        Returns: string;
       };
       update_listing: {
         Args: {
@@ -347,6 +768,7 @@ export type Database = {
           p_title: string;
           p_description: string;
           p_condition: Database["public"]["Enums"]["listing_condition"];
+          p_rarity: Database["public"]["Enums"]["listing_rarity"];
           p_size: string;
           p_looking_for: string;
           p_for_trade: boolean;
@@ -363,7 +785,11 @@ export type Database = {
     };
     Enums: {
       listing_condition: "sealed" | "like_new" | "gently_used" | "well_loved";
+      listing_rarity: "common" | "uncommon" | "rare" | "secret" | "unsure";
       listing_status: "available" | "pending" | "traded";
+      message_kind: "text" | "proposal" | "system";
+      offer_status: "pending" | "accepted" | "declined" | "cancelled";
+      trade_status: "planning" | "completed" | "cancelled";
     };
     CompositeTypes: {
       [_ in never]: never;

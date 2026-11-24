@@ -32,7 +32,7 @@ export function AppNav({ username, displayName, avatarPath }: NavProps) {
     },
     { href: "/listings/new", label: "Post", icon: PlusCircle, active: pathname === "/listings/new" },
     {
-      href: "/trades",
+      href: "/offers",
       label: "Trades",
       icon: ArrowLeftRight,
       active: pathname.startsWith("/trades") || pathname.startsWith("/offers"),

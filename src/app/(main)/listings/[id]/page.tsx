@@ -8,10 +8,13 @@ import { CommentForm } from "@/components/listings/CommentForm";
 import { DeleteListingButton } from "@/components/listings/DeleteListingButton";
 import { ListingGallery } from "@/components/listings/ListingGallery";
 import { ListingStatusChip } from "@/components/listings/ListingStatusChip";
+import { RarityChip } from "@/components/listings/RarityChip";
+import { RarityVotes } from "@/components/listings/RarityVotes";
+import { WantButton } from "@/components/listings/WantButton";
 import { Notice } from "@/components/ui/Notice";
 import { buttonClasses } from "@/components/ui/button";
 import { requireUserId } from "@/lib/auth";
-import { timeAgo } from "@/lib/format";
+import { plural, timeAgo } from "@/lib/format";
 import { conditionLabel, CONDITIONS, UUID_PATTERN } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
 import { deleteComment } from "../actions";
@@ -43,16 +46,33 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
   if (!listing) notFound();
 
   const supabase = await createClient();
-  const { data: comments } = await supabase
-    .from("listing_comments")
-    .select("id, body, created_at, author_id, author:profiles!listing_comments_author_id_fkey ( username, display_name, avatar_path )")
-    .eq("listing_id", listing.id)
-    .order("created_at", { ascending: true });
+  const [{ data: comments }, { data: votes }, { data: wants }, { data: myOffer }, { data: openOffers }] =
+    await Promise.all([
+      supabase
+        .from("listing_comments")
+        .select("id, body, created_at, author_id, author:profiles!listing_comments_author_id_fkey ( username, display_name, avatar_path )")
+        .eq("listing_id", listing.id)
+        .order("created_at", { ascending: true }),
+      supabase.from("listing_rarity_votes").select("voter_id, rarity").eq("listing_id", listing.id),
+      supabase.from("listing_wants").select("user_id").eq("listing_id", listing.id),
+      // Do I already have an open negotiation for this item?
+      supabase
+        .from("offers")
+        .select("id")
+        .eq("listing_id", listing.id)
+        .eq("sender_id", myId)
+        .eq("status", "pending")
+        .maybeSingle(),
+      supabase.rpc("open_offer_count", { p_listing_id: listing.id }),
+    ]);
 
   const isOwner = listing.owner_id === myId;
   const photos = [...listing.listing_images].sort((a, b) => a.position - b.position).map((i) => i.path);
   const conditionHint = CONDITIONS.find((c) => c.value === listing.condition)?.hint;
   const canOffer = !isOwner && listing.for_trade && listing.status === "available";
+  const myVote = votes?.find((v) => v.voter_id === myId)?.rarity ?? null;
+  const iWant = Boolean(wants?.some((w) => w.user_id === myId));
+  const openOfferCount = openOffers ?? 0;
 
   return (
     <div className="space-y-8">
@@ -69,7 +89,13 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
               <span className="rounded-full bg-card px-2.5 py-1 text-navy ring-1 ring-line" title={conditionHint}>
                 {conditionLabel(listing.condition)}
               </span>
+              <RarityChip rarity={listing.rarity} showUnsure />
               <ListingStatusChip status={listing.status} forTrade={listing.for_trade} />
+              {openOfferCount > 0 && listing.status === "available" && (
+                <span className="rounded-full bg-warning-soft px-2.5 py-1 text-navy">
+                  {plural(openOfferCount, "open offer")}
+                </span>
+              )}
             </div>
             <h1 className="text-2xl font-extrabold md:text-3xl">{listing.title}</h1>
             <p className="text-sm text-muted">
@@ -103,11 +129,21 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
             ) : (
               <Notice tone="info">This listing is part of a trade, so it can&apos;t be edited right now.</Notice>
             )
-          ) : canOffer ? (
-            <Link href={`/listings/${listing.id}/offer`} className={buttonClasses("primary", "w-full sm:w-auto")}>
-              <ArrowLeftRight aria-hidden="true" size={18} />
-              Make an offer
+          ) : myOffer ? (
+            <Link href={`/offers/${myOffer.id}`} className={buttonClasses("primary", "w-full sm:w-auto")}>
+              <MessageCircle aria-hidden="true" size={18} />
+              Continue your negotiation
             </Link>
+          ) : canOffer ? (
+            <div className="space-y-1">
+              <Link href={`/listings/${listing.id}/offer`} className={buttonClasses("primary", "w-full sm:w-auto")}>
+                <ArrowLeftRight aria-hidden="true" size={18} />
+                Make an offer
+              </Link>
+              <p className="text-xs text-muted">
+                Pick items to offer, then chat and counter until you both agree.
+              </p>
+            </div>
           ) : !listing.for_trade ? (
             <Notice tone="info">Showcase only. {listing.owner.display_name} is showing this off, not trading it.</Notice>
           ) : listing.status === "pending" ? (
@@ -115,6 +151,21 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
           ) : (
             <Notice tone="success">This item has already been traded.</Notice>
           )}
+
+          <WantButton
+            listingId={listing.id}
+            wanted={iWant}
+            count={wants?.length ?? 0}
+            canWant={!isOwner}
+          />
+
+          <RarityVotes
+            listingId={listing.id}
+            ownerRarity={listing.rarity}
+            votes={votes ?? []}
+            myVote={myVote}
+            canVote={!isOwner}
+          />
 
           {(listing.description || listing.size) && (
             <dl className="space-y-3">

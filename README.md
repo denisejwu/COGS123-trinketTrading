@@ -6,6 +6,19 @@ A web app where collectors trade trinkets (blind box figures, pins, keychains, t
 
 Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Postgres, Auth, Storage, Realtime).
 
+### How trading works (prototype)
+
+- **No money.** Trades are item-for-item swaps, and can include several items on each side.
+- **Negotiation room.** An offer opens a private room with live chat. Either person can send a counter-offer
+  (a new mix of items) until one of them accepts the other's latest proposal.
+- **Fairness meter.** Every item gets points = rarity × condition (Common 1, Uncommon 2, Rare 4,
+  Secret/Chase 8; Sealed ×1, Like new ×0.9, Gently used ×0.7, Well loved ×0.5). The meter compares both sides
+  and suggests how to balance them. It's a guide; both people decide.
+- **Rarity check.** Owners pick a rarity; other collectors can vote. After 3 votes the community's pick is used.
+- **Virtual swaps.** Trading happens inside the app: when both people confirm, the items change owners
+  (Phase 4). No meetups or shipping in this prototype.
+- **Social extras.** "I want this" hearts, and trade matches found from the "Looking for" notes on listings.
+
 ---
 
 ## Build progress
@@ -14,8 +27,8 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
 |---|---|---|
 | 1 | Project setup, Supabase connection, auth, profiles | ✅ Done |
 | 2 | Communities, listings with photos, comments | ✅ Done |
-| 3 | Offers with accept/decline rules | ⏳ Next |
-| 4 | Trade rooms, realtime chat, plan panel, complete trade | |
+| 3 | Rarity + votes, wants, matches, negotiation room (offers, counter-offers, live chat, fairness meter) | ✅ Done |
+| 4 | Virtual swap room: proof photos, both confirm, items change owners, item journey | ⏳ Next |
 | 5 | Reviews, trader badge, events + RSVP, notifications | |
 | 6 | Report/block, polish, deploy to Vercel | |
 
@@ -60,6 +73,10 @@ Pick one option and stick with it. If you mix them, the CLI may try to re-run fi
 |---|---|---|
 | `0001_profiles.sql` | 1 | `profiles` table, sign-up trigger, `avatars` storage bucket, security rules |
 | `0002_communities_listings.sql` | 2 | communities, members, listings + photos, comments, discussion posts, `listing-images` and `community-covers` buckets |
+| `0003_negotiation.sql` | 3 | rarity, rarity votes, wants, offers / proposal rounds / items, chat messages (Realtime), trades, trade matches |
+
+**Check your setup any time** with `npm run check:supabase`. It uses only the publishable key and tells you
+which migrations and storage buckets it can find.
 
 **Then run `supabase/seed.sql`** the same way (SQL Editor → paste → Run). It adds the six starter
 communities (Blind Boxes, Enamel Pins, Keychains, Pokémon Cards, Trading Cards, Plushies). It's safe to run

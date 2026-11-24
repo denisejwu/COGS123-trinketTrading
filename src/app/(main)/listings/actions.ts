@@ -3,17 +3,20 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getMyProfile, requireUserId } from "@/lib/auth";
+import { isRarity } from "@/lib/fairness";
 import { isCondition, UUID_PATTERN } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
+import type { ListingCondition, ListingRarity } from "@/lib/types";
 import { formText, type FormState } from "@/lib/validation";
 
 /** Reads and checks the listing form. Shared by "create" and "edit". */
-function readListingForm(formData: FormData, userId: string) {
+function readListingForm(formData: FormData, userId: string, isEdit = false) {
   const values = {
     community_id: formText(formData, "community_id"),
     title: formText(formData, "title"),
     description: formText(formData, "description"),
     condition: formText(formData, "condition"),
+    rarity: formText(formData, "rarity") || "unsure",
     size: formText(formData, "size"),
     looking_for: formText(formData, "looking_for"),
     for_trade: formText(formData, "for_trade") === "false" ? "false" : "true",
@@ -27,12 +30,17 @@ function readListingForm(formData: FormData, userId: string) {
   if (values.title.length < 3 || values.title.length > 80) fieldErrors.title = "Use 3 to 80 characters.";
   if (!UUID_PATTERN.test(values.community_id)) fieldErrors.community_id = "Choose a community.";
   if (!isCondition(values.condition)) fieldErrors.condition = "Choose a condition.";
+  if (!isRarity(values.rarity)) fieldErrors.rarity = "Choose a rarity (or “Not sure”).";
   if (values.description.length > 1000) fieldErrors.description = "Keep it under 1000 characters.";
   if (values.size.length > 60) fieldErrors.size = "Keep it under 60 characters.";
   if (values.looking_for.length > 200) fieldErrors.looking_for = "Keep it under 200 characters.";
   if (imagePaths.length < 1) fieldErrors.photos = "Add at least one photo.";
   if (imagePaths.length > 4) fieldErrors.photos = "You can add up to 4 photos.";
-  if (imagePaths.some((p) => !p.startsWith(`${userId}/`))) fieldErrors.photos = "Please re-upload your photos.";
+  // New photos must be in your folder. (When editing, photos already on the
+  // listing are allowed too; the database checks those.)
+  if (!isEdit && imagePaths.some((p) => !p.startsWith(`${userId}/`))) {
+    fieldErrors.photos = "Please re-upload your photos.";
+  }
 
   // Only keep "looking for" on listings that are up for trade.
   if (values.for_trade === "false") values.looking_for = "";
@@ -45,7 +53,8 @@ function rpcArgs(values: ReturnType<typeof readListingForm>["values"], imagePath
     p_community_id: values.community_id,
     p_title: values.title,
     p_description: values.description,
-    p_condition: values.condition as "sealed" | "like_new" | "gently_used" | "well_loved",
+    p_condition: values.condition as ListingCondition,
+    p_rarity: values.rarity as ListingRarity,
     p_size: values.size,
     p_looking_for: values.looking_for,
     p_for_trade: values.for_trade === "true",
@@ -75,7 +84,7 @@ export async function createListing(_prev: FormState, formData: FormData): Promi
 export async function updateListing(_prev: FormState, formData: FormData): Promise<FormState> {
   const userId = await requireUserId();
   const listingId = formText(formData, "listing_id");
-  const { values, imagePaths, fieldErrors } = readListingForm(formData, userId);
+  const { values, imagePaths, fieldErrors } = readListingForm(formData, userId, true);
   if (Object.keys(fieldErrors).length) {
     return { status: "error", message: "Please fix the highlighted fields.", fieldErrors, values };
   }

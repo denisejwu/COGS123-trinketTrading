@@ -90,6 +90,19 @@ const { rows: argRows } = await db.query(`
   where n.nspname = 'public' and a.typ is not null
   order by p.oid, a.ord`);
 
+// Columns of functions declared `returns table (...)`.
+const { rows: tableColumnRows } = await db.query(`
+  select p.oid, a.ord, a.name, t.typname, t.typtype, t.typcategory,
+         et.typname as elem_typname, et.typtype as elem_typtype
+  from pg_proc p
+  join pg_namespace n on n.oid = p.pronamespace
+  cross join lateral unnest(p.proallargtypes, p.proargmodes, p.proargnames)
+    with ordinality as a(typ, mode, name, ord)
+  join pg_type t on t.oid = a.typ
+  left join pg_type et on et.oid = t.typelem and t.typcategory = 'A'
+  where n.nspname = 'public' and a.mode = 't'
+  order by p.oid, a.ord`);
+
 // ---- 3. Postgres type -> TypeScript type ------------------------------------
 function tsType(typname, typtype, elemTypname, elemTyptype) {
   if (elemTypname) return `${tsType(elemTypname, elemTyptype)}[]`;
@@ -166,9 +179,12 @@ if (fnRows.length === 0) out(6, "[_ in never]: never;");
 for (const fn of fnRows) {
   const args = argRows.filter((a) => a.oid === fn.oid);
   const firstOptional = fn.pronargs - fn.pronargdefaults; // the last N args have defaults
-  let returns = fn.ret_table
-    ? `Database["public"]["Tables"]["${fn.ret_table}"]["Row"]`
-    : tsType(fn.ret_typname, fn.ret_typtype, fn.ret_elem_typname, fn.ret_elem_typtype);
+  const tableColumns = tableColumnRows.filter((c) => c.oid === fn.oid);
+  let returns = tableColumns.length
+    ? `{ ${tableColumns.map((c) => `${c.name}: ${tsType(c.typname, c.typtype, c.elem_typname, c.elem_typtype)}`).join("; ")} }`
+    : fn.ret_table
+      ? `Database["public"]["Tables"]["${fn.ret_table}"]["Row"]`
+      : tsType(fn.ret_typname, fn.ret_typtype, fn.ret_elem_typname, fn.ret_elem_typtype);
   if (fn.proretset) returns += "[]";
   out(6, `${fn.proname}: {`);
   if (args.length === 0) out(8, "Args: never;");

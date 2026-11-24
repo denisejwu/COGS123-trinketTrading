@@ -1,4 +1,4 @@
-import type { ListingCondition } from "@/lib/types";
+import type { ListingCondition, ListingRarity } from "@/lib/types";
 
 /**
  * Condition options, in order, with a plain-language hint for each so
@@ -25,8 +25,9 @@ export function isCondition(value: unknown): value is ListingCondition {
  * tell Supabase which relationship to follow.
  */
 export const LISTING_CARD_SELECT = `
-  id, title, description, condition, status, for_trade, looking_for, created_at,
+  id, title, description, condition, rarity, status, for_trade, looking_for, created_at,
   listing_images ( path, position ),
+  listing_wants ( count ),
   owner:profiles!listings_owner_id_fkey (
     id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, location
   ),
@@ -44,11 +45,14 @@ export type ListingCardData = {
   title: string;
   description: string;
   condition: ListingCondition;
+  rarity: ListingRarity;
   status: "available" | "pending" | "traded";
   for_trade: boolean;
   looking_for: string | null;
   created_at: string;
   listing_images: { path: string; position: number }[];
+  /** How many people tapped "I want this" (Supabase returns [{ count }]). */
+  listing_wants: { count: number }[];
   owner: {
     id: string;
     username: string;

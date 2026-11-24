@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ImageOff } from "lucide-react";
+import { Heart, ImageOff } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { TraderBadge } from "@/components/TraderBadge";
 import { conditionLabel, coverPhoto, type ListingCardData } from "@/lib/listings";
 import { publicImageUrl } from "@/lib/storage";
 import { ListingStatusChip } from "./ListingStatusChip";
+import { RarityChip } from "./RarityChip";
 
 /**
  * Listing card from the prototype: photo on the left, title and
@@ -22,6 +23,7 @@ export function ListingCard({
   showCommunity?: boolean;
 }) {
   const photo = coverPhoto(listing.listing_images);
+  const wants = listing.listing_wants?.[0]?.count ?? 0;
 
   return (
     <article className="relative flex gap-4 rounded-3xl border border-line bg-card p-3 transition-shadow hover:shadow-md focus-within:shadow-md">
@@ -58,10 +60,18 @@ export function ListingCard({
           <span className="rounded-full bg-cream px-2 py-0.5 text-navy">
             {conditionLabel(listing.condition)}
           </span>
+          <RarityChip rarity={listing.rarity} />
           <ListingStatusChip status={listing.status} forTrade={listing.for_trade} />
           {showCommunity && (
             <span className="rounded-full bg-cream px-2 py-0.5 text-muted">
               {listing.community.name}
+            </span>
+          )}
+          {wants > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-cream px-2 py-0.5 text-[#a1264a]">
+              <Heart aria-hidden="true" size={12} className="fill-current" />
+              {wants}
+              <span className="sr-only">{wants === 1 ? "person wants" : "people want"} this</span>
             </span>
           )}
         </div>

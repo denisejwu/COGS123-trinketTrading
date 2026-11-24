@@ -5,6 +5,7 @@ import { createListing, updateListing } from "@/app/(main)/listings/actions";
 import { TextAreaField, TextField } from "@/components/ui/Field";
 import { FormMessage } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
+import { RARITIES } from "@/lib/fairness";
 import { CONDITIONS } from "@/lib/listings";
 import { initialFormState } from "@/lib/validation";
 import { PhotoPicker } from "./PhotoPicker";
@@ -15,6 +16,7 @@ export type ListingFormInitial = {
   title: string;
   description: string;
   condition: string;
+  rarity: string;
   size: string | null;
   looking_for: string | null;
   for_trade: boolean;
@@ -135,6 +137,35 @@ export function ListingForm({
           ))}
         </div>
         {errors.condition && <p className="text-xs font-semibold text-danger">{errors.condition}</p>}
+      </fieldset>
+
+      {/* Rarity: feeds the fairness meter. Other collectors can vote on it later. */}
+      <fieldset className="space-y-2" aria-describedby="rarity-hint">
+        <legend className="text-sm font-bold">Rarity</legend>
+        <p id="rarity-hint" className="text-xs text-muted">
+          Used by the fairness meter when people make offers. Other collectors can vote if they disagree.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {RARITIES.map((r) => (
+            <label
+              key={r.value}
+              className="flex cursor-pointer gap-3 rounded-2xl border border-line bg-card p-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-accent"
+            >
+              <input
+                type="radio"
+                name="rarity"
+                value={r.value}
+                defaultChecked={(v("rarity") || "unsure") === r.value}
+                className="mt-1 h-4 w-4 accent-accent"
+              />
+              <span>
+                <span className="block text-sm font-bold">{r.label}</span>
+                <span className="block text-xs text-muted">{r.hint}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        {errors.rarity && <p className="text-xs font-semibold text-danger">{errors.rarity}</p>}
       </fieldset>
 
       {/* For trade or showcase only */}

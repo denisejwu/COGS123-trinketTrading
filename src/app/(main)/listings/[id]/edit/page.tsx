@@ -49,6 +49,7 @@ export default async function EditListingPage({ params }: PageProps<"/listings/[
               title: listing.title,
               description: listing.description,
               condition: listing.condition,
+              rarity: listing.rarity,
               size: listing.size,
               looking_for: listing.looking_for,
               for_trade: listing.for_trade,
