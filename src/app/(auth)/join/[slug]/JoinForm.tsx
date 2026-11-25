@@ -1,20 +1,42 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useTransition } from "react";
 import { TextField } from "@/components/ui/Field";
-import { FormMessage } from "@/components/ui/Notice";
-import { SubmitButton } from "@/components/ui/SubmitButton";
-import { initialFormState } from "@/lib/validation";
+import { Notice } from "@/components/ui/Notice";
+import { buttonClasses } from "@/components/ui/button";
+import { signInWithName } from "@/lib/sign-in";
 import { joinRoom } from "../../actions";
 
-/** One field, one button: your name, then you're in the room. */
+/**
+ * One field, one button: your name, then you're in the room.
+ *  1. sign in with the name (in the browser, so each phone counts on its own)
+ *  2. a server action adds you to the room and takes you inside
+ */
 export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: string | null }) {
-  const [state, formAction] = useActionState(joinRoom, initialFormState);
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    startTransition(async () => {
+      if (!signedInAs) {
+        const problem = await signInWithName(name);
+        if (problem) {
+          setError(problem);
+          return;
+        }
+      }
+      // On success this redirects into the room, so it only returns on errors.
+      const result = await joinRoom(slug);
+      if (result?.message) setError(result.message);
+    });
+  }
 
   return (
-    <form action={formAction} className="space-y-4" noValidate>
-      <input type="hidden" name="slug" value={slug} />
-      <FormMessage state={state} />
+    <form onSubmit={submit} className="space-y-4" noValidate>
+      {error && <Notice tone="error">{error}</Notice>}
       {signedInAs ? (
         <p className="text-sm">
           You&apos;re signed in as <strong>{signedInAs}</strong> on this device.
@@ -28,13 +50,13 @@ export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: strin
           maxLength={50}
           placeholder="e.g. Denise W."
           hint="This creates your trader profile. No email or password needed."
-          error={state.fieldErrors?.display_name}
-          defaultValue={state.values?.display_name}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
       )}
-      <SubmitButton pendingText="Joining…" className="w-full">
-        Join the room
-      </SubmitButton>
+      <button type="submit" disabled={pending} className={buttonClasses("primary", "w-full")}>
+        {pending ? "Joining…" : "Join the room"}
+      </button>
     </form>
   );
 }

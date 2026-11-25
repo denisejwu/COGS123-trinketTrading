@@ -1,20 +1,36 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { TextField } from "@/components/ui/Field";
-import { FormMessage } from "@/components/ui/Notice";
-import { SubmitButton } from "@/components/ui/SubmitButton";
-import { initialFormState } from "@/lib/validation";
-import { startWithName } from "../actions";
+import { Notice } from "@/components/ui/Notice";
+import { buttonClasses } from "@/components/ui/button";
+import { signInWithName } from "@/lib/sign-in";
 
+/** Type a name, get an account. The sign-in runs in the browser (see lib/sign-in.ts). */
 export function LoginForm({ next }: { next: string }) {
-  // useActionState runs the server action and gives us back its result.
-  const [state, formAction] = useActionState(startWithName, initialFormState);
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    startTransition(async () => {
+      const problem = await signInWithName(name);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      router.replace(next);
+      router.refresh();
+    });
+  }
 
   return (
-    <form action={formAction} className="space-y-4" noValidate>
-      <input type="hidden" name="next" value={next} />
-      <FormMessage state={state} />
+    <form onSubmit={submit} className="space-y-4" noValidate>
+      {error && <Notice tone="error">{error}</Notice>}
       <TextField
         label="Your name"
         name="display_name"
@@ -23,12 +39,12 @@ export function LoginForm({ next }: { next: string }) {
         maxLength={50}
         placeholder="e.g. Denise W."
         hint="How other traders will see you. You can change it later in Settings."
-        error={state.fieldErrors?.display_name}
-        defaultValue={state.values?.display_name}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
-      <SubmitButton pendingText="Setting things up…" className="w-full">
-        Start trading
-      </SubmitButton>
+      <button type="submit" disabled={pending} className={buttonClasses("primary", "w-full")}>
+        {pending ? "Setting things up…" : "Start trading"}
+      </button>
     </form>
   );
 }
