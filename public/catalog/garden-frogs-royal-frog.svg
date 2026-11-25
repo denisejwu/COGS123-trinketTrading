@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Royal Frog">
+  <defs><linearGradient id="g14" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcfce7"/><stop offset="1" stop-color="#bbf7d0"/></linearGradient></defs>
+  <rect x="4" y="4" width="192" height="192" rx="28" fill="url(#g14)" stroke="#60a5fa" stroke-width="8"/>
+  <g fill="#60a5fa" opacity="0.9">
+           <path d="M28 30 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 Z"/>
+           <path d="M172 150 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 Z"/>
+         </g>
+  <circle cx="74" cy="76" r="17" fill="#86d39a" stroke="#1b2541" stroke-width="3"/>
+              <circle cx="126" cy="76" r="17" fill="#86d39a" stroke="#1b2541" stroke-width="3"/>
+  <ellipse cx="100" cy="150" rx="40" ry="22" fill="#86d39a" stroke="#1b2541" stroke-width="3"/>
+          <circle cx="100" cy="108" r="42" fill="#86d39a" stroke="#1b2541" stroke-width="3"/>
+  <circle cx="74" cy="76" r="6" fill="#1b2541"/><circle cx="126" cy="76" r="6" fill="#1b2541"/>
+    <ellipse cx="78" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <ellipse cx="122" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <path d="M93 120 Q100 127 107 120" fill="none" stroke="#1b2541" stroke-width="3" stroke-linecap="round"/>
+  <path d="M74 66 L80 42 L92 58 L100 38 L108 58 L120 42 L126 66 Z" fill="#facc15" stroke="#1b2541" stroke-width="3" stroke-linejoin="round"/><circle cx="100" cy="56" r="4" fill="#f43f5e"/>
+  <rect x="58" y="174" width="84" height="16" rx="8" fill="#ffffff" opacity="0.9"/>
+  <text x="100" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#1e40af">RARE</text>
+</svg>

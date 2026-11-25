@@ -12,6 +12,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      catalog_items: {
+        Row: {
+          blurb: string;
+          form: string;
+          id: string;
+          image_path: string;
+          name: string;
+          rarity: Database["public"]["Enums"]["listing_rarity"];
+          series: string;
+          slug: string;
+        };
+        Insert: {
+          blurb?: string;
+          form: string;
+          id?: string;
+          image_path: string;
+          name: string;
+          rarity: Database["public"]["Enums"]["listing_rarity"];
+          series: string;
+          slug: string;
+        };
+        Update: {
+          blurb?: string;
+          form?: string;
+          id?: string;
+          image_path?: string;
+          name?: string;
+          rarity?: Database["public"]["Enums"]["listing_rarity"];
+          series?: string;
+          slug?: string;
+        };
+        Relationships: [];
+      };
       communities: {
         Row: {
           cover_path: string | null;
@@ -580,6 +613,7 @@ export type Database = {
       };
       listings: {
         Row: {
+          catalog_item_id: string | null;
           community_id: string;
           condition: Database["public"]["Enums"]["listing_condition"];
           created_at: string;
@@ -595,6 +629,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          catalog_item_id?: string | null;
           community_id: string;
           condition: Database["public"]["Enums"]["listing_condition"];
           created_at?: string;
@@ -610,6 +645,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          catalog_item_id?: string | null;
           community_id?: string;
           condition?: Database["public"]["Enums"]["listing_condition"];
           created_at?: string;
@@ -625,6 +661,13 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "listings_catalog_item_id_fkey";
+            columns: ["catalog_item_id"];
+            isOneToOne: false;
+            referencedRelation: "catalog_items";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "listings_community_id_fkey";
             columns: ["community_id"];
@@ -795,6 +838,7 @@ export type Database = {
           location: string | null;
           rating_avg: number | null;
           rating_count: number;
+          starter_pack_claimed_at: string | null;
           trades_completed: number;
           updated_at: string;
           username: string;
@@ -808,6 +852,7 @@ export type Database = {
           location?: string | null;
           rating_avg?: number | null;
           rating_count?: number;
+          starter_pack_claimed_at?: string | null;
           trades_completed?: number;
           updated_at?: string;
           username: string;
@@ -821,6 +866,7 @@ export type Database = {
           location?: string | null;
           rating_avg?: number | null;
           rating_count?: number;
+          starter_pack_claimed_at?: string | null;
           trades_completed?: number;
           updated_at?: string;
           username?: string;
@@ -1097,6 +1143,12 @@ export type Database = {
           p_trade_id: string;
         };
         Returns: undefined;
+      };
+      claim_starter_pack: {
+        Args: {
+          p_community_id: string;
+        };
+        Returns: string[];
       };
       close_offers_for_listing: {
         Args: {

@@ -69,7 +69,7 @@ describe("profiles", () => {
       [[me, other]],
     );
     expect(rows.find((r) => r.id === me)?.bio).toBe("hi!");
-    expect(rows.find((r) => r.id === other)?.bio).toBeNull();
+    expect(rows.find((r) => r.id === other)?.bio).not.toBe("hacked");
     expect(updatedOther.affectedRows).toBe(0); // RLS silently matched no rows
   });
 

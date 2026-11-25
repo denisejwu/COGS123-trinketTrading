@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Rocket Cat">
+  <defs><linearGradient id="g16" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0e7ff"/><stop offset="1" stop-color="#c7d2fe"/></linearGradient></defs>
+  <rect x="4" y="4" width="192" height="192" rx="28" fill="url(#g16)" stroke="#cbd5e1" stroke-width="8"/>
+  
+  <path d="M66 92 L74 52 L98 80 Z" fill="#fbbf8f" stroke="#1b2541" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M134 92 L126 52 L102 80 Z" fill="#fbbf8f" stroke="#1b2541" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="100" cy="150" rx="40" ry="22" fill="#fbbf8f" stroke="#1b2541" stroke-width="3"/>
+          <circle cx="100" cy="108" r="42" fill="#fbbf8f" stroke="#1b2541" stroke-width="3"/>
+  <circle cx="86" cy="106" r="5" fill="#1b2541"/><circle cx="114" cy="106" r="5" fill="#1b2541"/>
+    <ellipse cx="78" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <ellipse cx="122" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <path d="M93 120 Q100 127 107 120" fill="none" stroke="#1b2541" stroke-width="3" stroke-linecap="round"/>
+  <path d="M156 40 Q168 54 164 80 L148 80 Q144 54 156 40 Z" fill="#e2e8f0" stroke="#1b2541" stroke-width="2"/><circle cx="156" cy="58" r="5" fill="#38bdf8"/><path d="M150 80 L156 94 L162 80 Z" fill="#f97316"/>
+  <rect x="58" y="174" width="84" height="16" rx="8" fill="#ffffff" opacity="0.9"/>
+  <text x="100" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#475569">COMMON</text>
+</svg>

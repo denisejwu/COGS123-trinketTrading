@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Rainy Day Bunny">
+  <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde2ef"/><stop offset="1" stop-color="#e9d5ff"/></linearGradient></defs>
+  <rect x="4" y="4" width="192" height="192" rx="28" fill="url(#g3)" stroke="#cbd5e1" stroke-width="8"/>
+  
+  <ellipse cx="82" cy="58" rx="13" ry="34" fill="#ffffff" stroke="#1b2541" stroke-width="3"/>
+              <ellipse cx="118" cy="58" rx="13" ry="34" fill="#ffffff" stroke="#1b2541" stroke-width="3"/>
+              <ellipse cx="82" cy="60" rx="6" ry="22" fill="#fbcfe8"/><ellipse cx="118" cy="60" rx="6" ry="22" fill="#fbcfe8"/>
+  <ellipse cx="100" cy="150" rx="40" ry="22" fill="#ffffff" stroke="#1b2541" stroke-width="3"/>
+          <circle cx="100" cy="108" r="42" fill="#ffffff" stroke="#1b2541" stroke-width="3"/>
+  <circle cx="86" cy="106" r="5" fill="#1b2541"/><circle cx="114" cy="106" r="5" fill="#1b2541"/>
+    <ellipse cx="78" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <ellipse cx="122" cy="120" rx="8" ry="5" fill="#f9a8d4" opacity="0.8"/>
+    <path d="M93 120 Q100 127 107 120" fill="none" stroke="#1b2541" stroke-width="3" stroke-linecap="round"/>
+  <path d="M132 70 Q156 40 180 70 Z" fill="#60a5fa" stroke="#1b2541" stroke-width="3"/><line x1="156" y1="70" x2="156" y2="104" stroke="#1b2541" stroke-width="3"/>
+  <rect x="58" y="174" width="84" height="16" rx="8" fill="#ffffff" opacity="0.9"/>
+  <text x="100" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#475569">COMMON</text>
+</svg>

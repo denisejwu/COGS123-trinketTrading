@@ -91,6 +91,11 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
                 {conditionLabel(listing.condition)}
               </span>
               <RarityChip rarity={listing.rarity} showUnsure />
+              {listing.catalog_item_id && (
+                <span className="rounded-full bg-[#f1e8fb] px-2.5 py-1 text-[#6b2fb3]" title="Came from a starter pack">
+                  Virtual trinket
+                </span>
+              )}
               <ListingStatusChip status={listing.status} forTrade={listing.for_trade} />
               {openOfferCount > 0 && listing.status === "available" && (
                 <span className="rounded-full bg-warning-soft px-2.5 py-1 text-navy">

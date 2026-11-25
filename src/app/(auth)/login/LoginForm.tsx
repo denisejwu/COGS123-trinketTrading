@@ -11,6 +11,7 @@ import { signInWithName } from "@/lib/sign-in";
 export function LoginForm({ next }: { next: string }) {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [school, setSchool] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -18,7 +19,7 @@ export function LoginForm({ next }: { next: string }) {
     event.preventDefault();
     setError(null);
     startTransition(async () => {
-      const problem = await signInWithName(name);
+      const problem = await signInWithName(name, school);
       if (problem) {
         setError(problem);
         return;
@@ -41,6 +42,16 @@ export function LoginForm({ next }: { next: string }) {
         hint="How other traders will see you. You can change it later in Settings."
         value={name}
         onChange={(e) => setName(e.target.value)}
+      />
+      <TextField
+        label="School or city"
+        name="location"
+        optional
+        maxLength={80}
+        placeholder="e.g. UC San Diego"
+        hint="Shows “Same school as you” on profiles and powers the Nearby filter."
+        value={school}
+        onChange={(e) => setSchool(e.target.value)}
       />
       <button type="submit" disabled={pending} className={buttonClasses("primary", "w-full")}>
         {pending ? "Setting things up…" : "Start trading"}

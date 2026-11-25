@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   // rendered fresh on each request" model is simpler and fits better.
 
   images: {
+    // The virtual trinkets and default avatars are our own SVG files in
+    // /public. These settings let <Image> show SVGs safely (no scripts).
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Allow <Image> to load photos from Supabase Storage public buckets.
     remotePatterns: [
       {

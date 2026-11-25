@@ -14,6 +14,7 @@ import { joinRoom } from "../../actions";
  */
 export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: string | null }) {
   const [name, setName] = useState("");
+  const [school, setSchool] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -22,7 +23,7 @@ export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: strin
     setError(null);
     startTransition(async () => {
       if (!signedInAs) {
-        const problem = await signInWithName(name);
+        const problem = await signInWithName(name, school);
         if (problem) {
           setError(problem);
           return;
@@ -42,6 +43,7 @@ export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: strin
           You&apos;re signed in as <strong>{signedInAs}</strong> on this device.
         </p>
       ) : (
+        <>
         <TextField
           label="Your name"
           name="display_name"
@@ -53,6 +55,17 @@ export function JoinForm({ slug, signedInAs }: { slug: string; signedInAs: strin
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        <TextField
+          label="School or city"
+          name="location"
+          optional
+          maxLength={80}
+          placeholder="e.g. UC San Diego"
+          hint="Shows “Same school as you” on profiles and powers the Nearby filter."
+          value={school}
+          onChange={(e) => setSchool(e.target.value)}
+        />
+        </>
       )}
       <button type="submit" disabled={pending} className={buttonClasses("primary", "w-full")}>
         {pending ? "Joining…" : "Join the room"}

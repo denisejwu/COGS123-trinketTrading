@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
+import { isBuiltInImage } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import { formText, USERNAME_PATTERN, USERNAME_RULES, type FormState } from "@/lib/validation";
 
@@ -74,7 +75,7 @@ export async function saveAvatar(path: string): Promise<FormState> {
   const { error } = await supabase.from("profiles").update({ avatar_path: path }).eq("id", userId);
   if (error) return { status: "error", message: `Couldn't save your photo: ${error.message}` };
 
-  if (current?.avatar_path && current.avatar_path !== path) {
+  if (current?.avatar_path && current.avatar_path !== path && !isBuiltInImage(current.avatar_path)) {
     await supabase.storage.from("avatars").remove([current.avatar_path]);
   }
 
@@ -94,7 +95,7 @@ export async function removeAvatar(): Promise<void> {
     .single();
 
   await supabase.from("profiles").update({ avatar_path: null }).eq("id", userId);
-  if (current?.avatar_path) {
+  if (current?.avatar_path && !isBuiltInImage(current.avatar_path)) {
     await supabase.storage.from("avatars").remove([current.avatar_path]);
   }
   revalidatePath("/", "layout");

@@ -8,15 +8,18 @@ import { createClient } from "@/lib/supabase/client";
  * would look like ONE address (Vercel's) and share one limit. From the
  * browser, each phone counts on its own.
  *
+ * The name (and optional school/city) travel along as metadata; the
+ * database turns them into a filled-in profile.
  * Returns an error message to show, or null on success.
  */
-export async function signInWithName(displayName: string): Promise<string | null> {
+export async function signInWithName(displayName: string, location = ""): Promise<string | null> {
   const name = displayName.trim();
-  if (name.length < 2 || name.length > 50) return "Use 2 to 50 characters.";
+  if (name.length < 2 || name.length > 50) return "Use 2 to 50 characters for your name.";
+  if (location.trim().length > 80) return "Keep your school or city under 80 characters.";
 
   const supabase = createClient();
   const { error } = await supabase.auth.signInAnonymously({
-    options: { data: { display_name: name } },
+    options: { data: { display_name: name, location: location.trim() } },
   });
   if (!error) return null;
 

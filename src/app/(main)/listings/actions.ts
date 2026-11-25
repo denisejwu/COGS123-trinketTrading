@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getMyProfile, requireUserId } from "@/lib/auth";
 import { isRarity } from "@/lib/fairness";
 import { isCondition, UUID_PATTERN } from "@/lib/listings";
+import { isBuiltInImage } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { ListingCondition, ListingRarity } from "@/lib/types";
 import { formText, type FormState } from "@/lib/validation";
@@ -98,7 +99,7 @@ export async function updateListing(_prev: FormState, formData: FormData): Promi
 
   // Clean up photos that were taken off the listing.
   if (removedPaths && removedPaths.length > 0) {
-    await supabase.storage.from("listing-images").remove(removedPaths);
+    await supabase.storage.from("listing-images").remove(removedPaths.filter((p) => !isBuiltInImage(p)));
   }
 
   revalidatePath("/", "layout");
@@ -120,7 +121,9 @@ export async function deleteListing(formData: FormData) {
   const { data: deleted } = await supabase.from("listings").delete().eq("id", listingId).select("id");
 
   if (deleted && deleted.length > 0 && images && images.length > 0) {
-    await supabase.storage.from("listing-images").remove(images.map((i) => i.path));
+    await supabase.storage
+      .from("listing-images")
+      .remove(images.map((i) => i.path).filter((p) => !isBuiltInImage(p)));
   }
 
   const me = await getMyProfile();

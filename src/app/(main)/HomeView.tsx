@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, Package, Sparkles, Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
+import { StarterPackCard } from "@/components/StarterPackCard";
 import { CommunityCover } from "@/components/communities/CommunityCover";
 import { EventCard } from "@/components/events/EventCard";
 import { ListingCard } from "@/components/listings/ListingCard";
@@ -49,6 +50,7 @@ export function HomeView({
   matches,
   activeSwaps,
   events,
+  starterPack,
 }: {
   displayName: string;
   communities: HomeCommunity[];
@@ -58,6 +60,8 @@ export function HomeView({
   matches: TradeMatch[];
   activeSwaps: ActiveSwap[];
   events: EventSummary[];
+  /** Set when you haven't opened your starter pack yet. */
+  starterPack?: { communityId: string; communityName: string } | null;
 }) {
   return (
     <div className="space-y-10">
@@ -65,6 +69,8 @@ export function HomeView({
         <h1 className="text-2xl font-extrabold md:text-3xl">Hi, {displayName}!</h1>
         <p className="text-muted">Here&apos;s what&apos;s happening in your collector world.</p>
       </section>
+
+      {starterPack && <StarterPackCard communityId={starterPack.communityId} communityName={starterPack.communityName} />}
 
       {activeSwaps.length > 0 && (
         <section aria-labelledby="your-swaps" className="space-y-3">

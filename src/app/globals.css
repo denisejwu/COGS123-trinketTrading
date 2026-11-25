@@ -27,6 +27,28 @@ html {
   color: var(--color-navy);
 }
 
+/* Small animations for the starter pack (turned off if you prefer reduced motion). */
+@theme {
+  --animate-pop-in: pop-in 0.5s ease-out both;
+  --animate-wiggle: wiggle 0.4s ease-in-out infinite;
+  --animate-bounce-slow: bounce-slow 2s ease-in-out infinite;
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-6deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop-in, .animate-wiggle, .animate-bounce-slow { animation: none; }
+}
+
 /* A clear focus ring for keyboard users on every interactive element. */
 :focus-visible {
   outline: 3px solid var(--color-accent);

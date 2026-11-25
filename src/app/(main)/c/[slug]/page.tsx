@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, QrCode } from "lucide-react";
+import { StarterPackCard } from "@/components/StarterPackCard";
 import { CommunityCover } from "@/components/communities/CommunityCover";
 import { LinkTabs } from "@/components/ui/LinkTabs";
 import { Notice } from "@/components/ui/Notice";
@@ -114,9 +115,15 @@ export default async function CommunityPage({ params, searchParams }: PageProps<
 
       {sp.welcome === "1" && isMember && (
         <Notice tone="success">
-          Welcome to {community.name}, {me.display_name}! Post something you&apos;d trade, check the Events tab, and
-          say hi in Discussion.
+          Welcome to {community.name}, {me.display_name}!{" "}
+          {me.starter_pack_claimed_at
+            ? "Check the Events tab and say hi in the room chat."
+            : "Open your starter pack below to get trinkets to trade."}
         </Notice>
+      )}
+
+      {isMember && !me.starter_pack_claimed_at && (
+        <StarterPackCard communityId={community.id} communityName={community.name} />
       )}
 
       {/* ---------- Tabs ---------- */}

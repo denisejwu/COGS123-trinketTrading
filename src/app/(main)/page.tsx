@@ -93,8 +93,19 @@ export default async function HomePage() {
     return [{ kind: row.match_kind as TradeMatch["kind"], mine: { id: mine.id, title: mine.title }, theirs }];
   });
 
+  // Haven't opened your starter pack yet? It opens into your newest
+  // community, or Blind Boxes if you haven't joined any.
+  let starterPack: { communityId: string; communityName: string } | null = null;
+  if (!profile.starter_pack_claimed_at) {
+    const target =
+      communities[0] ??
+      (await supabase.from("communities").select("id, name").eq("slug", "blind-boxes").maybeSingle()).data;
+    if (target) starterPack = { communityId: target.id, communityName: target.name };
+  }
+
   return (
     <HomeView
+      starterPack={starterPack}
       displayName={profile.display_name}
       communities={communities}
       recentListings={(listings ?? []) as unknown as ListingCardData[]}
