@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Send } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
+import { LocalTime } from "@/components/LocalTime";
 import { buttonClasses } from "@/components/ui/button";
 import type { ChatMessage } from "@/lib/negotiations";
 import { createClient } from "@/lib/supabase/client";
@@ -178,9 +179,7 @@ export function TradeChat({
                 )}
                 <p className="whitespace-pre-line break-words">{message.body}</p>
                 <p className={`mt-0.5 text-[10px] ${mine && message.kind === "text" ? "text-white/80" : "text-muted"}`}>
-                  <time dateTime={message.created_at}>
-                    {new Date(message.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-                  </time>
+                  <LocalTime iso={message.created_at} style="time" />
                 </p>
               </div>
             </li>

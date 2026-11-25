@@ -19,7 +19,9 @@ function defaultStart() {
 export function CreateEventForm({ communityId, slug }: { communityId: string; slug: string }) {
   const [state, formAction] = useActionState(createEvent, initialFormState);
   const [type, setType] = useState<EventType>((state.values?.type as EventType) || "swap_meet");
-  const [localStart, setLocalStart] = useState(state.values?.starts_at ? "" : defaultStart());
+  // The default (in an hour) uses YOUR clock, so it's only worked out in the
+  // browser; the server renders an empty box that fills in straight away.
+  const [localStart, setLocalStart] = useState(() => (typeof window === "undefined" ? "" : defaultStart()));
   const errors = state.fieldErrors ?? {};
   const meta = EVENT_TYPES[type];
 
