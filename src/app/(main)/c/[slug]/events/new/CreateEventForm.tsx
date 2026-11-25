@@ -1,12 +1,14 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useSyncExternalStore } from "react";
 import { createEvent } from "@/app/(main)/events/actions";
 import { TextAreaField, TextField } from "@/components/ui/Field";
 import { FormMessage } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { EVENT_TYPES, type EventType } from "@/lib/event-types";
 import { initialFormState } from "@/lib/validation";
+
+const noSubscribe = () => () => {};
 
 /** Today + 1 hour, rounded, in the "YYYY-MM-DDTHH:MM" format date inputs want. */
 function defaultStart() {
@@ -19,9 +21,15 @@ function defaultStart() {
 export function CreateEventForm({ communityId, slug }: { communityId: string; slug: string }) {
   const [state, formAction] = useActionState(createEvent, initialFormState);
   const [type, setType] = useState<EventType>((state.values?.type as EventType) || "swap_meet");
-  // The default (in an hour) uses YOUR clock, so it's only worked out in the
-  // browser; the server renders an empty box that fills in straight away.
-  const [localStart, setLocalStart] = useState(() => (typeof window === "undefined" ? "" : defaultStart()));
+  // The default time (in an hour) uses YOUR clock, which the server doesn't
+  // know. `inBrowser` is false while the server draws the page and the very
+  // first browser render, then flips to true, so React properly re-renders
+  // (and re-enables the button) once the default time is filled in.
+  const inBrowser = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const [defaultTime] = useState(defaultStart);
+  const [edited, setEdited] = useState<string | null>(null);
+  const localStart = edited ?? (inBrowser ? defaultTime : "");
+  const setLocalStart = setEdited;
   const errors = state.fieldErrors ?? {};
   const meta = EVENT_TYPES[type];
 
