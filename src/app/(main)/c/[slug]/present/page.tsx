@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
+import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { RoomLive } from "@/components/communities/RoomLive";
 import { requireUserId } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -63,10 +64,15 @@ export default async function PresentRoomPage({ params }: PageProps<"/c/[slug]/p
             className="mx-auto w-full max-w-sm rounded-2xl bg-white p-3 [&_svg]:h-auto [&_svg]:w-full"
             dangerouslySetInnerHTML={{ __html: qrSvg }}
           />
-          <p className="break-all text-sm">
-            or open <strong className="text-accent">{joinUrl}</strong>
+          <div className="space-y-2 rounded-2xl bg-cream p-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted">On a laptop? Go to</p>
+            <p className="break-all text-lg font-extrabold text-accent">{joinUrl}</p>
+            <CopyLinkButton url={joinUrl} />
+          </div>
+          <p className="text-xs text-muted">
+            Phones: scan the code. Laptops: type or paste the link. Then type a name, and you&apos;re in. No email or
+            password. Each browser is one person.
           </p>
-          <p className="text-xs text-muted">Type a name, and you&apos;re in. No email or password.</p>
         </section>
 
         <section aria-labelledby="people-heading" className="space-y-4 rounded-3xl border border-line bg-card p-6">
