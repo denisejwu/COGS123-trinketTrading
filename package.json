@@ -13,7 +13,8 @@
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/database.types.ts",
     "db:types:local": "node scripts/gen-db-types.mjs",
     "check:supabase": "node --env-file=.env.local scripts/check-supabase.mjs",
-    "db:bundle": "node scripts/bundle-sql.mjs"
+    "db:bundle": "node scripts/bundle-sql.mjs",
+    "db:setup": "npm run db:bundle && node --env-file=.env.local --env-file-if-exists=.env.setup scripts/supabase-setup.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
