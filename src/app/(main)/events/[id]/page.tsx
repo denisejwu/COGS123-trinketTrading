@@ -22,7 +22,7 @@ import { getTradeableItems } from "@/lib/negotiations";
 import { publicImageUrl } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import { joinCommunity } from "../../c/[slug]/actions";
-import { removeEntry, revealMysterySwap, setEventStatus, toggleRsvp } from "../actions";
+import { deleteEvent, removeEntry, revealMysterySwap, setEventStatus, toggleRsvp } from "../actions";
 
 export async function generateMetadata({ params }: PageProps<"/events/[id]">): Promise<Metadata> {
   const { id } = await params;
@@ -116,6 +116,18 @@ export default async function EventPage({ params }: PageProps<"/events/[id]">) {
 
         {/* Host controls */}
         {event.canHost && event.status !== "ended" && <HostControls event={event} />}
+        {event.isCreator && (
+          <ActionButton
+            action={deleteEvent}
+            fields={{ event_id: event.id, slug: event.community.slug }}
+            variant="ghost"
+            className="text-danger hover:bg-danger-soft"
+            pendingText="Deleting…"
+            confirmText="Delete this event for everyone? This can't be undone."
+          >
+            Delete event
+          </ActionButton>
+        )}
       </header>
 
       {/* ---------- How it works ---------- */}

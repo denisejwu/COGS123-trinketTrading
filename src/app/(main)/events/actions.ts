@@ -138,3 +138,33 @@ export async function revealMysterySwap(_prev: FormState, formData: FormData): P
   revalidatePath("/", "layout");
   return { status: "success", message: "Revealed!" };
 }
+
+/**
+ * Delete an event you created. (A mystery swap can only be deleted while
+ * its pool is empty or after the reveal, so nobody's item stays locked.)
+ */
+export async function deleteEvent(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireUserId();
+  const eventId = formText(formData, "event_id");
+  const slug = formText(formData, "slug");
+  const supabase = await createClient();
+
+  const { data: event } = await supabase.from("events").select("type, status").eq("id", eventId).maybeSingle();
+  if (event?.type === "mystery_swap" && event.status !== "ended") {
+    const { count } = await supabase
+      .from("event_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", eventId);
+    if ((count ?? 0) > 0) {
+      return { status: "error", message: "Reveal the mystery swap (or wait for everyone to take their items out) before deleting it." };
+    }
+  }
+
+  // Security rules only let the person who created the event delete it.
+  const { data: deleted, error } = await supabase.from("events").delete().eq("id", eventId).select("id");
+  if (error) return { status: "error", message: error.message };
+  if (!deleted?.length) return { status: "error", message: "Only the person who created this event can delete it." };
+
+  revalidatePath(`/c/${slug}`);
+  redirect(`/c/${slug}?tab=events`);
+}

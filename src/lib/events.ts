@@ -101,6 +101,8 @@ export async function getEvent(eventId: string, myId: string) {
     community,
     host: (event.host as unknown as { username: string; display_name: string } | null) ?? null,
     canHost: Boolean(canHost),
+    /** Only the person who created the event can delete it. */
+    isCreator: event.created_by === myId,
     isMember: Boolean(membership),
     going: (rsvps ?? []).map((r) => ({ userId: r.user_id, ...(r.profile as unknown as PersonLite) })),
     imGoing: (rsvps ?? []).some((r) => r.user_id === myId),
