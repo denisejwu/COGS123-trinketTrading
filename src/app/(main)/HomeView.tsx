@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { CalendarDays, Package, Sparkles, Users } from "lucide-react";
+import { Avatar } from "@/components/Avatar";
 import { CommunityCover } from "@/components/communities/CommunityCover";
+import { EventCard } from "@/components/events/EventCard";
 import { ListingCard } from "@/components/listings/ListingCard";
 import { ListingGrid } from "@/components/listings/ListingGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClasses } from "@/components/ui/button";
+import type { EventSummary } from "@/lib/events";
 import type { ListingCardData } from "@/lib/listings";
+
+/** A swap that's been agreed but not yet confirmed by both people. */
+export type ActiveSwap = {
+  id: string;
+  needsMe: boolean;
+  other: { display_name: string; avatar_path: string | null };
+};
 
 export type HomeCommunity = { id: string; slug: string; name: string; cover_path: string | null };
 
@@ -37,6 +47,8 @@ export function HomeView({
   recentListings,
   listingsFromMyCommunities,
   matches,
+  activeSwaps,
+  events,
 }: {
   displayName: string;
   communities: HomeCommunity[];
@@ -44,6 +56,8 @@ export function HomeView({
   /** True when the listings come from your communities (vs. everywhere). */
   listingsFromMyCommunities: boolean;
   matches: TradeMatch[];
+  activeSwaps: ActiveSwap[];
+  events: EventSummary[];
 }) {
   return (
     <div className="space-y-10">
@@ -51,6 +65,33 @@ export function HomeView({
         <h1 className="text-2xl font-extrabold md:text-3xl">Hi, {displayName}!</h1>
         <p className="text-muted">Here&apos;s what&apos;s happening in your collector world.</p>
       </section>
+
+      {activeSwaps.length > 0 && (
+        <section aria-labelledby="your-swaps" className="space-y-3">
+          <h2 id="your-swaps" className="text-lg font-extrabold">
+            Your swaps
+          </h2>
+          <ul className="space-y-2">
+            {activeSwaps.map((swap) => (
+              <li key={swap.id}>
+                <Link
+                  href={`/trades/${swap.id}`}
+                  className="flex items-center gap-3 rounded-3xl border border-accent bg-card p-4 hover:shadow-md"
+                >
+                  <Avatar path={swap.other.avatar_path} name={swap.other.display_name} size={40} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-extrabold">Swap with {swap.other.display_name}</span>
+                    <span className="block text-xs text-muted">
+                      {swap.needsMe ? "Waiting for you to confirm" : "Waiting for them to confirm"}
+                    </span>
+                  </span>
+                  <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-white">Open</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="matches" className="space-y-3">
         <div>
@@ -170,9 +211,19 @@ export function HomeView({
         <h2 id="upcoming-events" className="text-lg font-extrabold">
           Upcoming events
         </h2>
-        <EmptyState icon={<CalendarDays size={22} />} title="No upcoming events">
-          Swap meets and unboxing parties from your communities will appear here.
-        </EmptyState>
+        {events.length === 0 ? (
+          <EmptyState icon={<CalendarDays size={22} />} title="No upcoming events">
+            Swap meets, mystery swaps and unboxing parties from your communities will appear here.
+          </EmptyState>
+        ) : (
+          <ul className="grid gap-3 md:grid-cols-2">
+            {events.map((event) => (
+              <li key={event.id}>
+                <EventCard event={event} showCommunity />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

@@ -4,7 +4,7 @@ import { hasSupabaseEnv, supabaseEnv } from "./env";
 import { sessionOnly } from "./session-cookie";
 
 // Pages you can visit without being logged in.
-const PUBLIC_PREFIXES = ["/login", "/auth"];
+const PUBLIC_PREFIXES = ["/login", "/auth", "/join"];
 // Pages a logged-in user has no reason to see (we send them home instead).
 const LOGGED_OUT_ONLY = ["/login"];
 

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Plus } from "lucide-react";
+import { Plus, QrCode } from "lucide-react";
 import { CommunityCover } from "@/components/communities/CommunityCover";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { LinkTabs } from "@/components/ui/LinkTabs";
+import { Notice } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { buttonClasses } from "@/components/ui/button";
 import { requireProfile } from "@/lib/auth";
 import { plural } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { joinCommunity, leaveCommunity } from "./actions";
+import { CommunityEvents } from "./CommunityEvents";
 import { CommunityListings } from "./CommunityListings";
 import { Discussion } from "./Discussion";
 
@@ -103,9 +104,20 @@ export default async function CommunityPage({ params, searchParams }: PageProps<
               <Plus aria-hidden="true" size={18} />
               Post here
             </Link>
+            <Link href={`/c/${community.slug}/present`} className={buttonClasses("secondary")}>
+              <QrCode aria-hidden="true" size={18} />
+              Invite (QR)
+            </Link>
           </div>
         </div>
       </section>
+
+      {sp.welcome === "1" && isMember && (
+        <Notice tone="success">
+          Welcome to {community.name}, {me.display_name}! Post something you&apos;d trade, check the Events tab, and
+          say hi in Discussion.
+        </Notice>
+      )}
 
       {/* ---------- Tabs ---------- */}
       <div className="space-y-2">
@@ -138,9 +150,7 @@ export default async function CommunityPage({ params, searchParams }: PageProps<
         />
       )}
       {tab === "events" && (
-        <EmptyState icon={<CalendarDays size={22} />} title="Events are coming soon">
-          Community swap meets, unboxing parties and RSVPs arrive in a later update.
-        </EmptyState>
+        <CommunityEvents communityId={community.id} communitySlug={community.slug} isMember={isMember} />
       )}
     </div>
   );

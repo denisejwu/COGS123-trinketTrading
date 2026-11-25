@@ -28,9 +28,9 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
 | 1 | Project setup, Supabase connection, auth, profiles | ✅ Done |
 | 2 | Communities, listings with photos, comments | ✅ Done |
 | 3 | Rarity + votes, wants, matches, negotiation room (offers, counter-offers, live chat, fairness meter) | ✅ Done |
-| 4 | Virtual swap room: proof photos, both confirm, items change owners, item journey | ⏳ Next |
-| 5 | Reviews, trader badge, events + RSVP, notifications | |
-| 6 | Report/block, polish, deploy to Vercel | |
+| 4 | Virtual swap room: proof photos, both confirm, items change owners, item journey, reviews, friends | ✅ Done |
+| 5 | Community events (swap meet, mystery swap, unboxing party, showcase contest, theme day), QR rooms | ✅ Done |
+| 6 | Notifications, report/block, polish | ⏳ Next |
 
 ---
 
@@ -63,14 +63,18 @@ For a **new, empty project**, run everything at once:
 
 The file runs as one transaction: if anything fails, nothing is saved, so you can fix it and run it again.
 
-**Later phases** add new migration files. Run just the new file the same way (SQL Editor → paste → Run).
+**Later phases** add new migration files. Either:
+- `npm run db:bundle -- --from=0004` → paste `supabase/update.sql` (only the new files + seed) into the SQL Editor, or
+- `npm run db:setup` with a temporary access token in `.env.setup`: it runs only the files your database doesn't have yet.
 
 | File | Phase | What it adds |
 |---|---|---|
 | `0001_profiles.sql` | 1 | `profiles` table, sign-up trigger (name → username like `denise_4821`), `avatars` bucket, security rules |
 | `0002_communities_listings.sql` | 2 | communities, members, listings + photos, comments, discussion posts, `listing-images` and `community-covers` buckets |
 | `0003_negotiation.sql` | 3 | rarity, rarity votes, wants, offers / proposal rounds / items, chat messages (Realtime), trades, trade matches |
-| `seed.sql` | 2+ | the six starter communities (safe to run again) |
+| `0004_swaps_reviews_friends.sql` | 4 | swap confirmations + ownership transfer, item journey, proof photos (private `trade-photos` bucket), reviews, friends |
+| `0005_events.sql` | 5 | events, RSVPs, entries, votes, mystery swap shuffle, public room preview for QR joins |
+| `seed.sql` | 2+ | the six starter communities and five starter events (safe to run again) |
 
 **Check your setup any time** with `npm run check:supabase`. It uses only the publishable key and tells you
 whether name-only sign-in is on and which tables and storage buckets it can find.
@@ -93,6 +97,20 @@ There's no email or password. On the welcome page you type a name, and that crea
   can't be opened again. Your profile and listings stay visible to others.
 - Each browser is its own person, so use a normal window and an Incognito window to test trading.
 - Supabase limits new anonymous accounts to about 30 per hour per network by default.
+
+## Running a live test with 50+ people (QR room)
+
+1. **Raise the sign-up limit first.** Supabase → **Authentication → Rate Limits** → anonymous sign-ins: set it to
+   about **300 per hour**. The default (~30/hour per network) blocks a classroom on one Wi-Fi.
+2. Create a community for the session (e.g. "COGS123 Swap Day") on the **live site** (Vercel), not localhost,
+   so phones can reach it.
+3. Open the community → **Invite (QR)**. Put that screen on the projector. It shows a QR code, the link, and a
+   live count + names as people join.
+4. People scan, type a name, tap **Join the room**, and land inside the community.
+5. Run events from the community's **Events** tab. As host you control them: **Start**, **End**, or for a
+   mystery swap **Shuffle & reveal**.
+
+Free-plan limits are fine for this size (Supabase Realtime allows 200 simultaneous connections).
 
 ## 4. Tests
 

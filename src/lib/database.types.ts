@@ -135,6 +135,243 @@ export type Database = {
           },
         ];
       };
+      event_entries: {
+        Row: {
+          caption: string | null;
+          created_at: string;
+          event_id: string;
+          id: string;
+          listing_id: string | null;
+          photo_path: string | null;
+          receiver_id: string | null;
+          user_id: string;
+        };
+        Insert: {
+          caption?: string | null;
+          created_at?: string;
+          event_id: string;
+          id?: string;
+          listing_id?: string | null;
+          photo_path?: string | null;
+          receiver_id?: string | null;
+          user_id: string;
+        };
+        Update: {
+          caption?: string | null;
+          created_at?: string;
+          event_id?: string;
+          id?: string;
+          listing_id?: string | null;
+          photo_path?: string | null;
+          receiver_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_entries_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_entries_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_entries_receiver_id_fkey";
+            columns: ["receiver_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_entries_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      event_rsvps: {
+        Row: {
+          created_at: string;
+          event_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          event_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      event_votes: {
+        Row: {
+          created_at: string;
+          entry_id: string;
+          event_id: string;
+          voter_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          entry_id: string;
+          event_id: string;
+          voter_id: string;
+        };
+        Update: {
+          created_at?: string;
+          entry_id?: string;
+          event_id?: string;
+          voter_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_votes_entry_id_fkey";
+            columns: ["entry_id"];
+            isOneToOne: false;
+            referencedRelation: "event_entries";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_votes_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_votes_voter_id_fkey";
+            columns: ["voter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      events: {
+        Row: {
+          community_id: string;
+          created_at: string;
+          created_by: string | null;
+          description: string;
+          id: string;
+          mini_activity: string | null;
+          place: string;
+          revealed_at: string | null;
+          starts_at: string;
+          status: Database["public"]["Enums"]["event_status"];
+          theme: string | null;
+          title: string;
+          type: Database["public"]["Enums"]["event_type"];
+          updated_at: string;
+        };
+        Insert: {
+          community_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string;
+          id?: string;
+          mini_activity?: string | null;
+          place?: string;
+          revealed_at?: string | null;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["event_status"];
+          theme?: string | null;
+          title: string;
+          type: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+        };
+        Update: {
+          community_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string;
+          id?: string;
+          mini_activity?: string | null;
+          place?: string;
+          revealed_at?: string | null;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["event_status"];
+          theme?: string | null;
+          title?: string;
+          type?: Database["public"]["Enums"]["event_type"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "events_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "communities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "events_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      friends: {
+        Row: {
+          created_at: string;
+          friend_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          friend_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          friend_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "friends_friend_id_fkey";
+            columns: ["friend_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "friends_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       listing_comments: {
         Row: {
           author_id: string;
@@ -238,6 +475,72 @@ export type Database = {
             columns: ["voter_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      listing_transfers: {
+        Row: {
+          created_at: string;
+          event_id: string | null;
+          from_user: string | null;
+          id: string;
+          listing_id: string;
+          to_user: string | null;
+          trade_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          event_id?: string | null;
+          from_user?: string | null;
+          id?: string;
+          listing_id: string;
+          to_user?: string | null;
+          trade_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string | null;
+          from_user?: string | null;
+          id?: string;
+          listing_id?: string;
+          to_user?: string | null;
+          trade_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_transfers_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_transfers_from_user_fkey";
+            columns: ["from_user"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_transfers_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_transfers_to_user_fkey";
+            columns: ["to_user"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "listing_transfers_trade_id_fkey";
+            columns: ["trade_id"];
+            isOneToOne: false;
+            referencedRelation: "trades";
             referencedColumns: ["id"];
           },
         ];
@@ -524,6 +827,61 @@ export type Database = {
         };
         Relationships: [];
       };
+      reviews: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          id: string;
+          rating: number;
+          reviewee_id: string;
+          reviewer_id: string;
+          tags: string[];
+          trade_id: string;
+        };
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          rating: number;
+          reviewee_id: string;
+          reviewer_id: string;
+          tags?: string[];
+          trade_id: string;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          rating?: number;
+          reviewee_id?: string;
+          reviewer_id?: string;
+          tags?: string[];
+          trade_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reviews_reviewee_id_fkey";
+            columns: ["reviewee_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey";
+            columns: ["reviewer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reviews_trade_id_fkey";
+            columns: ["trade_id"];
+            isOneToOne: false;
+            referencedRelation: "trades";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       trade_messages: {
         Row: {
           body: string;
@@ -570,6 +928,48 @@ export type Database = {
           {
             foreignKeyName: "trade_messages_sender_id_fkey";
             columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      trade_photos: {
+        Row: {
+          caption: string | null;
+          created_at: string;
+          id: string;
+          path: string;
+          trade_id: string;
+          uploader_id: string;
+        };
+        Insert: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          path: string;
+          trade_id: string;
+          uploader_id: string;
+        };
+        Update: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          path?: string;
+          trade_id?: string;
+          uploader_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trade_photos_trade_id_fkey";
+            columns: ["trade_id"];
+            isOneToOne: false;
+            referencedRelation: "trades";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trade_photos_uploader_id_fkey";
+            columns: ["uploader_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -671,9 +1071,30 @@ export type Database = {
         };
         Returns: string;
       };
+      add_event_entry: {
+        Args: {
+          p_event_id: string;
+          p_listing_id?: string;
+          p_photo_path?: string;
+          p_caption?: string;
+        };
+        Returns: string;
+      };
+      can_host_event: {
+        Args: {
+          p_event_id: string;
+        };
+        Returns: boolean;
+      };
       cancel_offer: {
         Args: {
           p_offer_id: string;
+        };
+        Returns: undefined;
+      };
+      cancel_trade: {
+        Args: {
+          p_trade_id: string;
         };
         Returns: undefined;
       };
@@ -683,6 +1104,12 @@ export type Database = {
           p_reason: string;
         };
         Returns: undefined;
+      };
+      confirm_swap: {
+        Args: {
+          p_trade_id: string;
+        };
+        Returns: Database["public"]["Enums"]["trade_status"];
       };
       counter_offer: {
         Args: {
@@ -747,11 +1174,39 @@ export type Database = {
         };
         Returns: boolean;
       };
+      leave_review: {
+        Args: {
+          p_trade_id: string;
+          p_rating: number;
+          p_tags?: string[];
+          p_comment?: string;
+        };
+        Returns: string;
+      };
       open_offer_count: {
         Args: {
           p_listing_id: string;
         };
         Returns: number;
+      };
+      remove_event_entry: {
+        Args: {
+          p_entry_id: string;
+        };
+        Returns: undefined;
+      };
+      run_mystery_swap: {
+        Args: {
+          p_event_id: string;
+        };
+        Returns: number;
+      };
+      set_event_status: {
+        Args: {
+          p_event_id: string;
+          p_status: Database["public"]["Enums"]["event_status"];
+        };
+        Returns: undefined;
       };
       start_offer: {
         Args: {
@@ -760,6 +1215,12 @@ export type Database = {
           p_message?: string;
         };
         Returns: string;
+      };
+      toggle_event_vote: {
+        Args: {
+          p_entry_id: string;
+        };
+        Returns: boolean;
       };
       update_listing: {
         Args: {
@@ -784,6 +1245,8 @@ export type Database = {
       };
     };
     Enums: {
+      event_status: "upcoming" | "live" | "ended";
+      event_type: "swap_meet" | "mystery_swap" | "unboxing_party" | "showcase_contest" | "theme_day";
       listing_condition: "sealed" | "like_new" | "gently_used" | "well_loved";
       listing_rarity: "common" | "uncommon" | "rare" | "secret" | "unsure";
       listing_status: "available" | "pending" | "traded";

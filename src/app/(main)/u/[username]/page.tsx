@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getUserId } from "@/lib/auth";
+import { requireProfile } from "@/lib/auth";
 import { LISTING_CARD_SELECT, type ListingCardData } from "@/lib/listings";
+import { getSocialContext } from "@/lib/social";
 import { createClient } from "@/lib/supabase/server";
-import { parseProfileTab, ProfileView } from "./ProfileView";
+import { parseProfileTab, ProfileView, type ProfileReview } from "./ProfileView";
 
 async function getProfile(username: string) {
   const supabase = await createClient();
@@ -27,29 +28,40 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const { username } = await params;
   const { tab } = await searchParams;
 
-  const [profile, myId] = await Promise.all([getProfile(username), getUserId()]);
+  const [profile, me] = await Promise.all([getProfile(username), requireProfile()]);
   if (!profile) notFound();
 
-  // Their listings that haven't been traded away yet, newest first.
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("listings")
-    .select(LISTING_CARD_SELECT)
-    .eq("owner_id", profile.id)
-    .neq("status", "traded")
-    .order("created_at", { ascending: false })
-    .limit(100);
+  const [{ data: listingRows, error }, { data: reviewRows }, social] = await Promise.all([
+    // Everything they currently own that isn't traded away.
+    supabase
+      .from("listings")
+      .select(LISTING_CARD_SELECT)
+      .eq("owner_id", profile.id)
+      .neq("status", "traded")
+      .order("updated_at", { ascending: false })
+      .limit(100),
+    supabase
+      .from("reviews")
+      .select("id, rating, tags, comment, created_at, reviewer:profiles!reviews_reviewer_id_fkey ( username, display_name, avatar_path )")
+      .eq("reviewee_id", profile.id)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    getSocialContext(profile.id, profile.location, me),
+  ]);
   if (error) throw new Error(`Couldn't load listings: ${error.message}`);
-  const listings = (data ?? []) as unknown as ListingCardData[];
+  const listings = (listingRows ?? []) as unknown as ListingCardData[];
 
   return (
     <ProfileView
       profile={profile}
-      isMe={profile.id === myId}
+      isMe={profile.id === me.id}
       activeTab={parseProfileTab(tab)}
       basePath={`/u/${profile.username}`}
       forTrade={listings.filter((l) => l.for_trade)}
       showcase={listings.filter((l) => !l.for_trade)}
+      reviews={(reviewRows ?? []) as unknown as ProfileReview[]}
+      social={social}
     />
   );
 }

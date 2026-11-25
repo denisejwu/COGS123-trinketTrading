@@ -11,6 +11,7 @@ import { ListingStatusChip } from "@/components/listings/ListingStatusChip";
 import { RarityChip } from "@/components/listings/RarityChip";
 import { RarityVotes } from "@/components/listings/RarityVotes";
 import { WantButton } from "@/components/listings/WantButton";
+import { ItemJourney } from "@/components/listings/ItemJourney";
 import { Notice } from "@/components/ui/Notice";
 import { buttonClasses } from "@/components/ui/button";
 import { requireUserId } from "@/lib/auth";
@@ -184,9 +185,9 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
             </dl>
           )}
 
-          {/* ---------- Posted by ---------- */}
+          {/* ---------- Owner (items can change owners in swaps) ---------- */}
           <div className="rounded-2xl border border-line bg-card p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">Posted by</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-muted">Owned by</p>
             <Link href={`/u/${listing.owner.username}`} className="mt-2 flex items-center gap-3 hover:underline">
               <Avatar path={listing.owner.avatar_path} name={listing.owner.display_name} size={44} />
               <span>
@@ -208,6 +209,8 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
               )}
             </div>
           </div>
+
+          <ItemJourney listingId={listing.id} />
         </div>
       </div>
 
