@@ -49,7 +49,8 @@ else ok(`0001_profiles.sql is installed (username_available answered ${free})`);
 //    tables exist. Logged-out visitors see no rows because of Row Level
 //    Security, which is expected.
 for (const table of ["communities", "listings", "community_posts", "offers", "trade_messages", "listing_wants"]) {
-  const { data, error } = await supabase.from(table).select("id").limit(1);
+  // select("*") works for every table (listing_wants has no "id" column).
+  const { data, error } = await supabase.from(table).select("*").limit(1);
   if (error) bad(`Table "${table}" not found (${error.code ?? ""} ${error.message})`);
   else ok(`Table "${table}" exists (logged-out visitors see ${data.length} rows: RLS is protecting it)`);
 }
