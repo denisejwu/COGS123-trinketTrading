@@ -130,7 +130,11 @@ export function TradeChat({
       .single();
 
     if (insertError) {
-      setError("Couldn't send your message. Please try again.");
+      setError(
+        insertError.code === "42501"
+          ? "You can't message this person right now."
+          : "Couldn't send your message. Please try again.",
+      );
     } else if (data) {
       setText("");
       addLive(data as ChatMessage);

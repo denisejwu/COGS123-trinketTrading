@@ -120,7 +120,13 @@ export function LiveChat({
         : supabase.from("direct_messages").insert({ thread_id: scope.threadId, sender_id: me.id, body });
     const { data, error: insertError } = await query.select("id, sender_id, body, created_at").single();
 
-    if (insertError) setError("Couldn't send your message. Please try again.");
+    if (insertError) {
+      setError(
+        insertError.code === "42501"
+          ? "You can't message this person right now."
+          : "Couldn't send your message. Please try again.",
+      );
+    }
     else if (data) {
       setText("");
       setLive((current) => (current.some((m) => m.id === data.id) ? current : [...current, data]));
