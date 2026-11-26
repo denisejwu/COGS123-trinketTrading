@@ -37,7 +37,7 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
 | 3 | Rarity + votes, wants, matches, negotiation room (offers, counter-offers, live chat, fairness meter) | ✅ Done |
 | 4 | Virtual swap room: proof photos, both confirm, items change owners, item journey, reviews, friends | ✅ Done |
 | 5 | Community events (swap meet, mystery swap, unboxing party, showcase contest, theme day), QR rooms | ✅ Done |
-| 6 | Notifications, report/block, polish | ⏳ Next |
+| 6 | Starter packs, live room chat + DMs, notifications, report/block | ✅ Done |
 
 ---
 
@@ -83,6 +83,7 @@ The file runs as one transaction: if anything fails, nothing is saved, so you ca
 | `0005_events.sql` | 5 | events, RSVPs, entries, votes, mystery swap shuffle, public room preview for QR joins |
 | `0006_starter_packs.sql` | 6 | virtual trinket catalog, `claim_starter_pack`, default avatar/bio/school for new users |
 | `0007_chat.sql` | 6 | room chat, direct message threads, unread counts (Realtime) |
+| `0008_notifications_safety.sql` | 6 | notification bell (made by triggers), reports, blocks (blocked people can't send offers or messages) |
 | `seed.sql` | 2+ | starter communities, five starter events, and the 40-trinket catalog (safe to run again) |
 
 **Check your setup any time** with `npm run check:supabase`. It uses only the publishable key and tells you

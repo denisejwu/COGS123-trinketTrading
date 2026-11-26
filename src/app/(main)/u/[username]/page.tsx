@@ -32,7 +32,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   if (!profile) notFound();
 
   const supabase = await createClient();
-  const [{ data: listingRows, error }, { data: reviewRows }, social] = await Promise.all([
+  const [{ data: listingRows, error }, { data: reviewRows }, social, { data: block }] = await Promise.all([
     // Everything they currently own that isn't traded away.
     supabase
       .from("listings")
@@ -48,6 +48,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
       .order("created_at", { ascending: false })
       .limit(50),
     getSocialContext(profile.id, profile.location, me),
+    supabase.from("blocks").select("blocked_id").eq("blocker_id", me.id).eq("blocked_id", profile.id).maybeSingle(),
   ]);
   if (error) throw new Error(`Couldn't load listings: ${error.message}`);
   const listings = (listingRows ?? []) as unknown as ListingCardData[];
@@ -62,6 +63,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
       showcase={listings.filter((l) => !l.for_trade)}
       reviews={(reviewRows ?? []) as unknown as ProfileReview[]}
       social={social}
+      blocked={Boolean(block)}
     />
   );
 }

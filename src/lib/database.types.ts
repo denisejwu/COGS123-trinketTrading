@@ -12,6 +12,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blocks: {
+        Row: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at: string;
+        };
+        Insert: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at?: string;
+        };
+        Update: {
+          blocked_id?: string;
+          blocker_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey";
+            columns: ["blocked_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey";
+            columns: ["blocker_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       catalog_items: {
         Row: {
           blurb: string;
@@ -771,6 +804,54 @@ export type Database = {
           },
         ];
       };
+      notifications: {
+        Row: {
+          actor_id: string | null;
+          body: string;
+          created_at: string;
+          id: string;
+          link: string;
+          read_at: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          user_id: string;
+        };
+        Insert: {
+          actor_id?: string | null;
+          body: string;
+          created_at?: string;
+          id?: string;
+          link: string;
+          read_at?: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          user_id: string;
+        };
+        Update: {
+          actor_id?: string | null;
+          body?: string;
+          created_at?: string;
+          id?: string;
+          link?: string;
+          read_at?: string | null;
+          type?: Database["public"]["Enums"]["notification_type"];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       offer_items: {
         Row: {
           giver_id: string;
@@ -959,6 +1040,55 @@ export type Database = {
           username?: string;
         };
         Relationships: [];
+      };
+      reports: {
+        Row: {
+          created_at: string;
+          id: string;
+          listing_id: string | null;
+          reason: string;
+          reported_user_id: string | null;
+          reporter_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          listing_id?: string | null;
+          reason: string;
+          reported_user_id?: string | null;
+          reporter_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          listing_id?: string | null;
+          reason?: string;
+          reported_user_id?: string | null;
+          reporter_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reports_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey";
+            columns: ["reported_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey";
+            columns: ["reporter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       reviews: {
         Row: {
@@ -1334,11 +1464,24 @@ export type Database = {
         };
         Returns: undefined;
       };
+      display_name_of: {
+        Args: {
+          p_user: string;
+        };
+        Returns: string;
+      };
       get_trade_matches: {
         Args: {
           p_limit?: number;
         };
         Returns: { my_listing_id: string; their_listing_id: string; match_kind: string }[];
+      };
+      is_blocked_between: {
+        Args: {
+          p_a: string;
+          p_b: string;
+        };
+        Returns: boolean;
       };
       is_member: {
         Args: {
@@ -1370,6 +1513,16 @@ export type Database = {
       mark_thread_read: {
         Args: {
           p_thread_id: string;
+        };
+        Returns: undefined;
+      };
+      notify: {
+        Args: {
+          p_user: string;
+          p_type: Database["public"]["Enums"]["notification_type"];
+          p_body: string;
+          p_link: string;
+          p_actor: string;
         };
         Returns: undefined;
       };
@@ -1451,6 +1604,7 @@ export type Database = {
       listing_rarity: "common" | "uncommon" | "rare" | "secret" | "unsure";
       listing_status: "available" | "pending" | "traded";
       message_kind: "text" | "proposal" | "system";
+      notification_type: "new_offer" | "counter_offer" | "offer_accepted" | "offer_declined" | "trade_message" | "direct_message" | "swap_confirmed" | "swap_completed" | "new_review" | "new_friend";
       offer_status: "pending" | "accepted" | "declined" | "cancelled";
       trade_status: "planning" | "completed" | "cancelled";
     };

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ArrowLeftRight, Home, MessageCircle, PlusCircle, Settings, UserRound, Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Logo } from "@/components/Logo";
+import { NotificationBell } from "./NotificationBell";
 import { buttonClasses } from "@/components/ui/button";
 
 type NavProps = {
@@ -13,6 +14,8 @@ type NavProps = {
   avatarPath: string | null;
   /** Direct-message conversations with unread messages. */
   unreadChats: number;
+  userId: string;
+  unreadNotifications: number;
 };
 
 /**
@@ -20,7 +23,7 @@ type NavProps = {
  * (Home, Communities, Post, Trades, Profile) like a native app.
  * It's a client component because it highlights the current page.
  */
-export function AppNav({ username, displayName, avatarPath, unreadChats }: NavProps) {
+export function AppNav({ username, displayName, avatarPath, unreadChats, userId, unreadNotifications }: NavProps) {
   const pathname = usePathname();
   const profileHref = `/u/${username}`;
 
@@ -88,6 +91,7 @@ export function AppNav({ username, displayName, avatarPath, unreadChats }: NavPr
                 Post a listing
               </Link>
             </div>
+            <NotificationBell userId={userId} initialUnread={unreadNotifications} />
             <Link
               href="/chats"
               aria-label={unreadChats > 0 ? `Chats (${unreadChats} unread)` : "Chats"}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeftRight, Eye, GraduationCap, MapPin, Package, Star, UserCheck, UserPlus, Users } from "lucide-react";
+import { ArrowLeftRight, Ban, Eye, GraduationCap, MapPin, Package, Star, UserCheck, UserPlus, Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Stars } from "@/components/Stars";
 import { TraderBadge } from "@/components/TraderBadge";
@@ -14,6 +14,8 @@ import { reviewTagLabel } from "@/lib/review-tags";
 import type { SocialContext } from "@/lib/social";
 import type { Profile } from "@/lib/types";
 import { MessageButton } from "@/components/chat/MessageButton";
+import { ReportForm } from "@/components/safety/ReportForm";
+import { toggleBlock } from "@/app/(main)/safety/actions";
 import { toggleFriend } from "./actions";
 
 // The three profile tabs, with a short explanation shown under each.
@@ -51,6 +53,7 @@ export function ProfileView({
   showcase,
   reviews,
   social,
+  blocked,
 }: {
   profile: Profile;
   isMe: boolean;
@@ -61,6 +64,8 @@ export function ProfileView({
   showcase: ListingCardData[];
   reviews: ProfileReview[];
   social: SocialContext;
+  /** Have I blocked this person? */
+  blocked: boolean;
 }) {
   const counts: Record<ProfileTab, number> = {
     "for-trade": forTrade.length,
@@ -155,6 +160,29 @@ export function ProfileView({
                 {social.mutualCount > social.mutual.length ? " and others" : ""}
               </span>
             </p>
+          </div>
+        )}
+
+        {/* ---------- Safety: block / report ---------- */}
+        {!isMe && (
+          <div className="space-y-2 border-t border-line pt-3">
+            {blocked && (
+              <p className="text-sm font-bold text-danger">
+                You blocked {profile.display_name}. They can&apos;t send you offers or messages.
+              </p>
+            )}
+            <div className="flex flex-wrap items-start gap-4">
+              <form action={toggleBlock}>
+                <input type="hidden" name="user_id" value={profile.id} />
+                <input type="hidden" name="username" value={profile.username} />
+                <input type="hidden" name="blocked" value={String(blocked)} />
+                <button type="submit" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-danger">
+                  <Ban aria-hidden="true" size={14} />
+                  {blocked ? "Unblock" : "Block"}
+                </button>
+              </form>
+              <ReportForm userId={profile.id} label="Report" />
+            </div>
           </div>
         )}
       </section>

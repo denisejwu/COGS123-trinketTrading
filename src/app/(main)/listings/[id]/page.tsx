@@ -12,6 +12,7 @@ import { RarityChip } from "@/components/listings/RarityChip";
 import { RarityVotes } from "@/components/listings/RarityVotes";
 import { WantButton } from "@/components/listings/WantButton";
 import { ItemJourney } from "@/components/listings/ItemJourney";
+import { ReportForm } from "@/components/safety/ReportForm";
 import { MessageButton } from "@/components/chat/MessageButton";
 import { Notice } from "@/components/ui/Notice";
 import { buttonClasses } from "@/components/ui/button";
@@ -219,6 +220,8 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
           {!isOwner && <MessageButton otherId={listing.owner.id} label={`Message ${listing.owner.display_name}`} />}
 
           <ItemJourney listingId={listing.id} />
+
+          {!isOwner && <ReportForm listingId={listing.id} label="Report this listing" />}
         </div>
       </div>
 
