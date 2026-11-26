@@ -15,9 +15,11 @@ import { joinCommunity, leaveCommunity } from "./actions";
 import { CommunityEvents } from "./CommunityEvents";
 import { CommunityListings } from "./CommunityListings";
 import { Discussion } from "./Discussion";
+import { RoomChat } from "./RoomChat";
 
 const TABS = {
   listings: { label: "Listings", hint: "Items members are trading or showing off here." },
+  chat: { label: "Room chat", hint: "Live chat with everyone in this community, right now." },
   discussion: { label: "Discussion", hint: "Questions, wishlists and meetup ideas for the whole community." },
   events: { label: "Events", hint: "Swap meets and get-togethers for this community." },
 } as const;
@@ -147,6 +149,9 @@ export default async function CommunityPage({ params, searchParams }: PageProps<
           myLocation={me.location}
           searchParams={sp}
         />
+      )}
+      {tab === "chat" && (
+        <RoomChat communityId={community.id} communityName={community.name} isMember={isMember} me={me} />
       )}
       {tab === "discussion" && (
         <Discussion

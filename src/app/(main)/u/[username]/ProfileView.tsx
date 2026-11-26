@@ -13,6 +13,7 @@ import type { ListingCardData } from "@/lib/listings";
 import { reviewTagLabel } from "@/lib/review-tags";
 import type { SocialContext } from "@/lib/social";
 import type { Profile } from "@/lib/types";
+import { MessageButton } from "@/components/chat/MessageButton";
 import { toggleFriend } from "./actions";
 
 // The three profile tabs, with a short explanation shown under each.
@@ -107,6 +108,8 @@ export function ProfileView({
                 Edit profile
               </Link>
             ) : (
+              <>
+              <MessageButton otherId={profile.id} />
               <form action={toggleFriend}>
                 <input type="hidden" name="friend_id" value={profile.id} />
                 <input type="hidden" name="username" value={profile.username} />
@@ -116,6 +119,7 @@ export function ProfileView({
                   {social.isFriend ? "Friends" : "Add friend"}
                 </SubmitButton>
               </form>
+              </>
             )}
           </div>
         </div>

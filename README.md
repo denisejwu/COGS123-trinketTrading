@@ -18,6 +18,13 @@ Built with Next.js 16 (App Router, TypeScript), Tailwind CSS 4 and Supabase (Pos
 - **Virtual swaps.** Trading happens inside the app: when both people confirm, the items change owners
   (Phase 4). No meetups or shipping in this prototype.
 - **Social extras.** "I want this" hearts, and trade matches found from the "Looking for" notes on listings.
+- **Starter packs (virtual trinkets).** Everyone can open a one-time pack of 4 random virtual trinkets from
+  5 made-up series (40 items, with original art in `public/catalog`). Odds: Common 60%, Uncommon 25%, Rare 12%,
+  Secret 3%. Each pack also sets a collecting goal ("Looking for: Cosmic Cats"), so trade matches appear right
+  away. "Post a listing" still works for real items. `npm run catalog` regenerates the art from `scripts/catalog-data.mjs`.
+- **Chat everywhere.** A live **room chat** tab in every community, **direct messages** (Message button on
+  profiles and listings), and a **Chats** page with unread counts. Trade chats stay inside each offer.
+- **Filled-in profiles.** New people get a cute default avatar, a starter bio, and (if they typed it) their school.
 
 ---
 
@@ -74,7 +81,9 @@ The file runs as one transaction: if anything fails, nothing is saved, so you ca
 | `0003_negotiation.sql` | 3 | rarity, rarity votes, wants, offers / proposal rounds / items, chat messages (Realtime), trades, trade matches |
 | `0004_swaps_reviews_friends.sql` | 4 | swap confirmations + ownership transfer, item journey, proof photos (private `trade-photos` bucket), reviews, friends |
 | `0005_events.sql` | 5 | events, RSVPs, entries, votes, mystery swap shuffle, public room preview for QR joins |
-| `seed.sql` | 2+ | the six starter communities and five starter events (safe to run again) |
+| `0006_starter_packs.sql` | 6 | virtual trinket catalog, `claim_starter_pack`, default avatar/bio/school for new users |
+| `0007_chat.sql` | 6 | room chat, direct message threads, unread counts (Realtime) |
+| `seed.sql` | 2+ | starter communities, five starter events, and the 40-trinket catalog (safe to run again) |
 
 **Check your setup any time** with `npm run check:supabase`. It uses only the publishable key and tells you
 whether name-only sign-in is on and which tables and storage buckets it can find.

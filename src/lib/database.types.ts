@@ -168,6 +168,93 @@ export type Database = {
           },
         ];
       };
+      direct_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          id: string;
+          sender_id: string;
+          thread_id: string;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          id?: string;
+          sender_id: string;
+          thread_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string;
+          thread_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "direct_messages_thread_id_fkey";
+            columns: ["thread_id"];
+            isOneToOne: false;
+            referencedRelation: "direct_threads";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      direct_threads: {
+        Row: {
+          created_at: string;
+          id: string;
+          last_message: string | null;
+          last_message_at: string | null;
+          user_a: string;
+          user_a_last_read: string | null;
+          user_b: string;
+          user_b_last_read: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          last_message?: string | null;
+          last_message_at?: string | null;
+          user_a: string;
+          user_a_last_read?: string | null;
+          user_b: string;
+          user_b_last_read?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          last_message?: string | null;
+          last_message_at?: string | null;
+          user_a?: string;
+          user_a_last_read?: string | null;
+          user_b?: string;
+          user_b_last_read?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "direct_threads_user_a_fkey";
+            columns: ["user_a"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "direct_threads_user_b_fkey";
+            columns: ["user_b"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       event_entries: {
         Row: {
           caption: string | null;
@@ -928,6 +1015,45 @@ export type Database = {
           },
         ];
       };
+      room_messages: {
+        Row: {
+          body: string;
+          community_id: string;
+          created_at: string;
+          id: string;
+          sender_id: string;
+        };
+        Insert: {
+          body: string;
+          community_id: string;
+          created_at?: string;
+          id?: string;
+          sender_id: string;
+        };
+        Update: {
+          body?: string;
+          community_id?: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "communities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       trade_messages: {
         Row: {
           body: string;
@@ -1226,6 +1352,12 @@ export type Database = {
         };
         Returns: boolean;
       };
+      is_thread_participant: {
+        Args: {
+          p_thread_id: string;
+        };
+        Returns: boolean;
+      };
       leave_review: {
         Args: {
           p_trade_id: string;
@@ -1234,6 +1366,12 @@ export type Database = {
           p_comment?: string;
         };
         Returns: string;
+      };
+      mark_thread_read: {
+        Args: {
+          p_thread_id: string;
+        };
+        Returns: undefined;
       };
       open_offer_count: {
         Args: {
@@ -1260,6 +1398,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      start_direct_chat: {
+        Args: {
+          p_other: string;
+        };
+        Returns: string;
+      };
       start_offer: {
         Args: {
           p_listing_id: string;
@@ -1273,6 +1417,10 @@ export type Database = {
           p_entry_id: string;
         };
         Returns: boolean;
+      };
+      unread_chat_count: {
+        Args: never;
+        Returns: number;
       };
       update_listing: {
         Args: {

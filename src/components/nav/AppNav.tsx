@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeftRight, Home, PlusCircle, Settings, UserRound, Users } from "lucide-react";
+import { ArrowLeftRight, Home, MessageCircle, PlusCircle, Settings, UserRound, Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Logo } from "@/components/Logo";
 import { buttonClasses } from "@/components/ui/button";
@@ -11,6 +11,8 @@ type NavProps = {
   username: string;
   displayName: string;
   avatarPath: string | null;
+  /** Direct-message conversations with unread messages. */
+  unreadChats: number;
 };
 
 /**
@@ -18,7 +20,7 @@ type NavProps = {
  * (Home, Communities, Post, Trades, Profile) like a native app.
  * It's a client component because it highlights the current page.
  */
-export function AppNav({ username, displayName, avatarPath }: NavProps) {
+export function AppNav({ username, displayName, avatarPath, unreadChats }: NavProps) {
   const pathname = usePathname();
   const profileHref = `/u/${username}`;
 
@@ -86,6 +88,22 @@ export function AppNav({ username, displayName, avatarPath }: NavProps) {
                 Post a listing
               </Link>
             </div>
+            <Link
+              href="/chats"
+              aria-label={unreadChats > 0 ? `Chats (${unreadChats} unread)` : "Chats"}
+              aria-current={pathname.startsWith("/chats") ? "page" : undefined}
+              className="relative rounded-full p-2 text-muted hover:bg-accent-soft hover:text-navy"
+            >
+              <MessageCircle aria-hidden="true" size={22} />
+              {unreadChats > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold text-white"
+                >
+                  {unreadChats > 9 ? "9+" : unreadChats}
+                </span>
+              )}
+            </Link>
             <Link
               href="/settings"
               aria-label="Settings"
