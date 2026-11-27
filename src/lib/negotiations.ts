@@ -84,7 +84,7 @@ export async function getTradeableItems(ownerId: string): Promise<ProposalItem[]
   return ((data ?? []) as unknown as ListingRow[]).map(toProposalItem);
 }
 
-const PERSON = "id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count";
+const PERSON = "id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, is_demo, trader_level";
 
 /**
  * Everything the negotiation room needs. Returns null if the offer doesn't

@@ -88,6 +88,9 @@ export function ProfileView({
               tradesCompleted={profile.trades_completed}
               ratingAvg={profile.rating_avg}
               ratingCount={profile.rating_count}
+              isDemo={profile.is_demo}
+              level={profile.trader_level}
+              showHint={Boolean(profile.is_demo)}
             />
             <div className="flex flex-wrap gap-2 text-sm">
               {profile.location && (

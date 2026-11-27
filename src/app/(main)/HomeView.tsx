@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { CalendarDays, Package, Sparkles, Users } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
+import { NextStepCard, type NextSteps } from "@/components/NextStepCard";
 import { StarterPackCard } from "@/components/StarterPackCard";
+import { RecentSwaps, type RecentSwap } from "@/components/trades/RecentSwaps";
 import { CommunityCover } from "@/components/communities/CommunityCover";
 import { EventCard } from "@/components/events/EventCard";
 import { ListingCard } from "@/components/listings/ListingCard";
@@ -39,8 +41,8 @@ function matchExplanation(match: TradeMatch) {
 }
 
 /**
- * What the home page looks like: your communities, recent listings, and
- * (in later phases) upcoming events and your active trades.
+ * What the home page looks like: your next step, active swaps, trade
+ * matches, recent swaps, communities, recent listings and events.
  */
 export function HomeView({
   displayName,
@@ -51,6 +53,8 @@ export function HomeView({
   activeSwaps,
   events,
   starterPack,
+  nextSteps,
+  recentSwaps,
 }: {
   displayName: string;
   communities: HomeCommunity[];
@@ -62,6 +66,10 @@ export function HomeView({
   events: EventSummary[];
   /** Set when you haven't opened your starter pack yet. */
   starterPack?: { communityId: string; communityName: string } | null;
+  /** The guide card (once your pack is open). */
+  nextSteps?: NextSteps | null;
+  /** Trades that already happened, as examples. */
+  recentSwaps?: RecentSwap[];
 }) {
   return (
     <div className="space-y-10">
@@ -71,6 +79,8 @@ export function HomeView({
       </section>
 
       {starterPack && <StarterPackCard communityId={starterPack.communityId} communityName={starterPack.communityName} />}
+
+      {nextSteps && <NextStepCard steps={nextSteps} />}
 
       {activeSwaps.length > 0 && (
         <section aria-labelledby="your-swaps" className="space-y-3">
@@ -144,6 +154,8 @@ export function HomeView({
           </ul>
         )}
       </section>
+
+      <RecentSwaps swaps={recentSwaps ?? []} title="Recent swaps: see how others traded" />
 
       <section aria-labelledby="my-communities" className="space-y-3">
         <div className="flex items-baseline justify-between gap-4">

@@ -1,4 +1,5 @@
-/** Notifications and safety (0008). */
+/** Notifications and safety (0008). Notifications caused by demo traders
+ * (like the welcome offer, 0009) are tested in demo-traders.test.ts. */
 import { describe, it, expect, beforeAll } from "vitest";
 import { createTestDb, createUser, asUser, rpc, type Db } from "./harness";
 
@@ -18,7 +19,8 @@ async function pack(user: string) {
 async function notes(user: string) {
   const { rows } = await asUser(db, user, (tx) =>
     tx.query<{ type: string; body: string; link: string }>(
-      "select type, body, link from public.notifications order by created_at",
+      `select type, body, link from public.notifications
+       where actor_id is null or not public.is_demo(actor_id) order by created_at`,
     ),
   );
   return rows;

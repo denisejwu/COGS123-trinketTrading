@@ -56,10 +56,20 @@ export default async function NegotiationPage({ params }: PageProps<"/offers/[id
               tradesCompleted={other.trades_completed}
               ratingAvg={other.rating_avg}
               ratingCount={other.rating_count}
+              isDemo={other.is_demo}
+              level={other.trader_level}
             />
           </div>
         </div>
       </header>
+
+      {other.is_demo && status === "pending" && (
+        <Notice tone="info">
+          <strong>{other.display_name} is a practice trader</strong>, here so you can try trading on your own. They
+          answer instantly: if the fairness meter says <strong>Balanced</strong> (or better for them), they accept.
+          If not, they&apos;ll ask for a little more.
+        </Notice>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_24rem]">
         <div className="space-y-5">

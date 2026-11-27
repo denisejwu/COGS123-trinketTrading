@@ -2,9 +2,11 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Gift } from "lucide-react";
-import { openStarterPack, type PackItem } from "@/app/(main)/starter-pack/actions";
+import { ArrowRight, Award, Gift, Sparkles } from "lucide-react";
+import { openStarterPack, type PackResult } from "@/app/(main)/starter-pack/actions";
+import { Avatar } from "@/components/Avatar";
 import { RarityChip } from "@/components/listings/RarityChip";
 import { Notice } from "@/components/ui/Notice";
 import { buttonClasses } from "@/components/ui/button";
@@ -12,11 +14,13 @@ import { publicImageUrl } from "@/lib/storage";
 
 /**
  * "Open your starter pack": everyone gets 4 random virtual trinkets to
- * trade, revealed one by one like a blind box.
+ * trade, revealed one by one like a blind box. It also reveals your trader
+ * level and the welcome offer a practice trader just sent you, so your
+ * first trade is one tap away.
  */
 export function StarterPackCard({ communityId, communityName }: { communityId: string; communityName: string }) {
   const router = useRouter();
-  const [items, setItems] = useState<PackItem[] | null>(null);
+  const [result, setResult] = useState<PackResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [opening, startOpening] = useTransition();
 
@@ -25,12 +29,14 @@ export function StarterPackCard({ communityId, communityName }: { communityId: s
     startOpening(async () => {
       const result = await openStarterPack(communityId);
       if (result.error) setError(result.error);
-      else setItems(result.items ?? []);
+      else setResult(result);
     });
   }
 
-  if (items) {
+  if (result) {
+    const items = result.items ?? [];
     const goal = items.find((i) => i.goal)?.goal;
+    const experienced = result.level === "experienced";
     return (
       <section aria-labelledby="pack-heading" className="space-y-4 rounded-3xl border-2 border-accent bg-card p-5">
         <div>
@@ -68,13 +74,56 @@ export function StarterPackCard({ communityId, communityName }: { communityId: s
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          onClick={() => router.refresh()}
-          className={buttonClasses("primary")}
+
+        {/* Your trader level */}
+        <div
+          className="flex animate-pop-in items-start gap-3 rounded-2xl bg-warning-soft p-3 text-sm text-navy"
+          style={{ animationDelay: `${items.length * 350}ms` }}
         >
-          Start trading
-        </button>
+          {experienced ? (
+            <Award aria-hidden="true" size={22} className="shrink-0" />
+          ) : (
+            <Sparkles aria-hidden="true" size={22} className="shrink-0" />
+          )}
+          <p>
+            {experienced ? (
+              <>
+                <strong>You&apos;re an Experienced trader!</strong> You already have {result.tradesCompleted} trades
+                and reviews on your profile, and your 2 latest swaps are in your Showcase. You know the ropes, so show
+                the new traders how it&apos;s done!
+              </>
+            ) : (
+              <>
+                <strong>You&apos;re a New trader.</strong> Everyone starts somewhere! Do your first swap to earn
+                trades and reviews on your profile.
+              </>
+            )}
+          </p>
+        </div>
+
+        {/* The welcome offer from a practice trader */}
+        {result.welcome ? (
+          <div className="flex flex-col gap-3 rounded-2xl border border-accent bg-accent-soft p-3 sm:flex-row sm:items-center">
+            <Avatar path={result.welcome.avatar} name={result.welcome.from} size={40} />
+            <p className="flex-1 text-sm">
+              <strong>{result.welcome.from} already sent you an offer!</strong> They&apos;re a practice trader, so
+              they&apos;ll reply instantly. Try your first swap.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link href={`/offers/${result.welcome.offerId}`} className={buttonClasses("primary")}>
+                See the offer
+                <ArrowRight aria-hidden="true" size={18} />
+              </Link>
+              <button type="button" onClick={() => router.refresh()} className={buttonClasses("secondary")}>
+                Look around first
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button type="button" onClick={() => router.refresh()} className={buttonClasses("primary")}>
+            Start trading
+          </button>
+        )}
       </section>
     );
   }

@@ -1003,10 +1003,12 @@ export type Database = {
           created_at: string;
           display_name: string;
           id: string;
+          is_demo: boolean;
           location: string | null;
           rating_avg: number | null;
           rating_count: number;
           starter_pack_claimed_at: string | null;
+          trader_level: string;
           trades_completed: number;
           updated_at: string;
           username: string;
@@ -1017,10 +1019,12 @@ export type Database = {
           created_at?: string;
           display_name: string;
           id: string;
+          is_demo?: boolean;
           location?: string | null;
           rating_avg?: number | null;
           rating_count?: number;
           starter_pack_claimed_at?: string | null;
+          trader_level?: string;
           trades_completed?: number;
           updated_at?: string;
           username: string;
@@ -1031,10 +1035,12 @@ export type Database = {
           created_at?: string;
           display_name?: string;
           id?: string;
+          is_demo?: boolean;
           location?: string | null;
           rating_avg?: number | null;
           rating_count?: number;
           starter_pack_claimed_at?: string | null;
+          trader_level?: string;
           trades_completed?: number;
           updated_at?: string;
           username?: string;
@@ -1367,11 +1373,77 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      _accept_offer_as: {
+        Args: {
+          p_offer_id: string;
+          p_actor: string;
+        };
+        Returns: string;
+      };
+      _confirm_swap_as: {
+        Args: {
+          p_trade_id: string;
+          p_actor: string;
+        };
+        Returns: Database["public"]["Enums"]["trade_status"];
+      };
+      _demo_listing: {
+        Args: {
+          p_owner: string;
+          p_community: string;
+          p_rarity: Database["public"]["Enums"]["listing_rarity"];
+          p_for_trade: boolean;
+        };
+        Returns: string;
+      };
+      _give_trading_history: {
+        Args: {
+          p_user: string;
+          p_community: string;
+        };
+        Returns: undefined;
+      };
+      _leave_review_as: {
+        Args: {
+          p_trade_id: string;
+          p_actor: string;
+          p_rating: number;
+          p_tags: string[];
+          p_comment: string;
+        };
+        Returns: string;
+      };
+      _record_past_swap: {
+        Args: {
+          p_a: string;
+          p_la: string;
+          p_b: string;
+          p_lb: string;
+          p_when: string;
+          p_both_review: boolean;
+        };
+        Returns: string;
+      };
+      _start_offer_as: {
+        Args: {
+          p_listing_id: string;
+          p_listing_ids: string[];
+          p_message: string;
+          p_actor: string;
+        };
+        Returns: string;
+      };
       accept_offer: {
         Args: {
           p_offer_id: string;
         };
         Returns: string;
+      };
+      add_demo_activity: {
+        Args: {
+          p_community_id: string;
+        };
+        Returns: number;
       };
       add_event_entry: {
         Args: {
@@ -1464,6 +1536,20 @@ export type Database = {
         };
         Returns: undefined;
       };
+      demo_line: {
+        Args: {
+          p_kind: string;
+        };
+        Returns: string;
+      };
+      demo_say: {
+        Args: {
+          p_offer_id: string;
+          p_bot: string;
+          p_body: string;
+        };
+        Returns: undefined;
+      };
       display_name_of: {
         Args: {
           p_user: string;
@@ -1480,6 +1566,12 @@ export type Database = {
         Args: {
           p_a: string;
           p_b: string;
+        };
+        Returns: boolean;
+      };
+      is_demo: {
+        Args: {
+          p_user: string;
         };
         Returns: boolean;
       };
@@ -1510,11 +1602,22 @@ export type Database = {
         };
         Returns: string;
       };
+      listing_points: {
+        Args: {
+          p_rarity: Database["public"]["Enums"]["listing_rarity"];
+          p_condition: Database["public"]["Enums"]["listing_condition"];
+        };
+        Returns: number;
+      };
       mark_thread_read: {
         Args: {
           p_thread_id: string;
         };
         Returns: undefined;
+      };
+      my_next_steps: {
+        Args: never;
+        Returns: { has_pack: boolean; trader_level: string; answer_offer_id: string; answer_from: string; confirm_trade_id: string; review_trade_id: string; swaps_done: number; real_swaps: number; reviews_written: number; offers_made: number; joined_event: boolean; live_event_id: string; live_event_title: string; room_slug: string }[];
       };
       notify: {
         Args: {
@@ -1532,6 +1635,13 @@ export type Database = {
         };
         Returns: number;
       };
+      recent_swaps: {
+        Args: {
+          p_community_id?: string;
+          p_limit?: number;
+        };
+        Returns: { trade_id: string; completed_at: string; a_username: string; a_name: string; a_avatar: string; a_item_id: string; a_item_title: string; a_item_image: string; a_items: number; b_username: string; b_name: string; b_avatar: string; b_item_id: string; b_item_title: string; b_item_image: string; b_items: number; stars: number }[];
+      };
       remove_event_entry: {
         Args: {
           p_entry_id: string;
@@ -1543,6 +1653,10 @@ export type Database = {
           p_event_id: string;
         };
         Returns: number;
+      };
+      seed_demo_history: {
+        Args: never;
+        Returns: undefined;
       };
       set_event_status: {
         Args: {

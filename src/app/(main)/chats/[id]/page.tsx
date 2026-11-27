@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Messages" };
 
-const PERSON = "id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count";
+const PERSON = "id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, is_demo, trader_level";
 
 /** A 1-on-1 conversation. Opening it marks it as read. */
 export default async function DirectChatPage({ params }: PageProps<"/chats/[id]">) {
@@ -37,7 +37,13 @@ export default async function DirectChatPage({ params }: PageProps<"/chats/[id]"
     supabase.rpc("mark_thread_read", { p_thread_id: id }),
   ]);
 
-  type Person = ChatPerson & { trades_completed: number; rating_avg: number | null; rating_count: number };
+  type Person = ChatPerson & {
+    trades_completed: number;
+    rating_avg: number | null;
+    rating_count: number;
+    is_demo: boolean;
+    trader_level: string;
+  };
   const a = thread.a as unknown as Person;
   const b = thread.b as unknown as Person;
   const other = thread.user_a === me.id ? b : a;
@@ -51,7 +57,9 @@ export default async function DirectChatPage({ params }: PageProps<"/chats/[id]"
         <Avatar path={other.avatar_path} name={other.display_name} size={48} />
         <span className="min-w-0 flex-1">
           <span className="block text-lg font-extrabold">{other.display_name}</span>
-          <TraderBadge tradesCompleted={other.trades_completed} ratingAvg={other.rating_avg} ratingCount={other.rating_count} />
+          <TraderBadge tradesCompleted={other.trades_completed} ratingAvg={other.rating_avg} ratingCount={other.rating_count}
+              isDemo={other.is_demo}
+              level={other.trader_level} />
         </span>
       </Link>
       <LiveChat

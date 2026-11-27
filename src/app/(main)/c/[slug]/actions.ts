@@ -72,3 +72,14 @@ export async function deletePost(formData: FormData) {
   await supabase.from("community_posts").delete().eq("id", formText(formData, "post_id"));
   revalidatePath(`/c/${formText(formData, "slug")}`);
 }
+
+/**
+ * Adds practice traders (with items) and live events to a room: handy when
+ * testing on your own. Safe to press twice (see add_demo_activity in 0009).
+ */
+export async function addDemoActivity(formData: FormData) {
+  await requireUserId();
+  const supabase = await createClient();
+  await supabase.rpc("add_demo_activity", { p_community_id: formText(formData, "community_id") });
+  refreshCommunity(formText(formData, "slug"));
+}

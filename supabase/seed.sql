@@ -98,3 +98,10 @@ insert into public.catalog_items (slug, name, series, form, rarity, blurb, image
   ('cloud-ghosts-starlight-ghost', 'Starlight Ghost', 'Cloud Ghosts', 'Trading card', 'secret', 'Friendly ghost trading cards that float in the clouds.', '/catalog/cloud-ghosts-starlight-ghost.svg')
 on conflict (slug) do nothing;
 -- CATALOG:END
+
+-- ---- Demo traders, example trades and live events ---------------------
+-- 10 practice traders with items and 12 trades that already happened, plus
+-- a live Swap Meet, a live Showcase Contest and a Mystery Swap in Blind
+-- Boxes. (Functions defined in 0009_demo_traders.sql.) Safe to re-run.
+select public.seed_demo_history();
+select public.add_demo_activity((select id from public.communities where slug = 'blind-boxes'));

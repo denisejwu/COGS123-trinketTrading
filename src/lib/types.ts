@@ -31,4 +31,8 @@ export type PersonSummary = {
   trades_completed: number;
   rating_avg: number | null;
   rating_count: number;
+  /** A practice trader (demo account) who replies instantly. */
+  is_demo?: boolean;
+  /** "new" or "experienced" (picked when the starter pack is opened). */
+  trader_level?: string;
 };

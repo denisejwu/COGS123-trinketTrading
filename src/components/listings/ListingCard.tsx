@@ -90,6 +90,8 @@ export function ListingCard({
             tradesCompleted={listing.owner.trades_completed}
             ratingAvg={listing.owner.rating_avg}
             ratingCount={listing.owner.rating_count}
+              isDemo={listing.owner.is_demo}
+              level={listing.owner.trader_level}
           />
         </div>
       </div>

@@ -45,8 +45,8 @@ async function newEvent(host: string, type: string, title: string) {
 }
 
 describe("seeded events", () => {
-  it("adds one starter event of each type", async () => {
-    const { rows } = await db.query<{ type: string }>("select type::text as type from public.events order by 1");
+  it("adds starter events of every type", async () => {
+    const { rows } = await db.query<{ type: string }>("select distinct type::text as type from public.events order by 1");
     expect(rows.map((r) => r.type)).toEqual([
       "mystery_swap",
       "showcase_contest",

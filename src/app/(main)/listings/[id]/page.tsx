@@ -29,7 +29,7 @@ async function getListing(id: string) {
     .from("listings")
     .select(
       `*, listing_images ( path, position ),
-       owner:profiles!listings_owner_id_fkey ( id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, location ),
+       owner:profiles!listings_owner_id_fkey ( id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, location, is_demo, trader_level ),
        community:communities!listings_community_id_fkey ( slug, name )`,
     )
     .eq("id", id)
@@ -207,6 +207,8 @@ export default async function ListingPage({ params }: PageProps<"/listings/[id]"
                 tradesCompleted={listing.owner.trades_completed}
                 ratingAvg={listing.owner.rating_avg}
                 ratingCount={listing.owner.rating_count}
+              isDemo={listing.owner.is_demo}
+              level={listing.owner.trader_level}
               />
               {listing.owner.location && (
                 <span className="flex items-center gap-1 text-xs text-muted">

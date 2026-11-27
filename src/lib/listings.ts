@@ -29,7 +29,7 @@ export const LISTING_CARD_SELECT = `
   listing_images ( path, position ),
   listing_wants ( count ),
   owner:profiles!listings_owner_id_fkey (
-    id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, location
+    id, username, display_name, avatar_path, trades_completed, rating_avg, rating_count, location, is_demo, trader_level
   ),
   community:communities!listings_community_id_fkey ( slug, name )
 ` as const;
@@ -62,6 +62,8 @@ export type ListingCardData = {
     rating_avg: number | null;
     rating_count: number;
     location: string | null;
+    is_demo?: boolean;
+    trader_level?: string;
   };
   community: { slug: string; name: string };
 };

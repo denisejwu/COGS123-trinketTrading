@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Plus, QrCode } from "lucide-react";
 import { StarterPackCard } from "@/components/StarterPackCard";
 import { CommunityCover } from "@/components/communities/CommunityCover";
+import { LiveNowBanner } from "@/components/events/LiveNowBanner";
 import { LinkTabs } from "@/components/ui/LinkTabs";
 import { Notice } from "@/components/ui/Notice";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -127,6 +128,8 @@ export default async function CommunityPage({ params, searchParams }: PageProps<
       {isMember && !me.starter_pack_claimed_at && (
         <StarterPackCard communityId={community.id} communityName={community.name} />
       )}
+
+      <LiveNowBanner communityId={community.id} />
 
       {/* ---------- Tabs ---------- */}
       <div className="space-y-2">
